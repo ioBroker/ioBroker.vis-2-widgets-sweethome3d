@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Material</title>
+    <script type="text/javascript" src="_socket/info.js"></script>
+    <script>
+      var script = document.createElement('script');
+      window.registerSocketOnLoad = function (cb) {
+        window.socketLoadedHandler = cb;
+      };
+      script.onload = function () { typeof window.socketLoadedHandler === 'function' && window.socketLoadedHandler(); };
+      script.src = window.location.protocol + '//' + window.location.hostname + ':8082/sweethome3d/lib/js/socket.io.js';
+      document.head.appendChild(script);
+    </script>
+    <script type="text/javascript" src="sweethome3d/lib/big.min.js"></script>
+    <script type="text/javascript" src="sweethome3d/lib/gl-matrix-min.js"></script>
+    <script type="text/javascript" src="sweethome3d/lib/jszip.min.js"></script>
+    <script type="text/javascript" src="sweethome3d/lib/core.min.js"></script>
+    <script type="text/javascript" src="sweethome3d/lib/geom.min.js"></script>
+    <script type="text/javascript" src="sweethome3d/lib/stroke.min.js"></script>
+    <script type="text/javascript" src="sweethome3d/lib/batik-svgpathparser.min.js"></script>
+    <script type="text/javascript" src="sweethome3d/lib/jsXmlSaxParser.min.js"></script>
+    <script type="text/javascript" src="sweethome3d/lib/triangulator.min.js"></script>
+    <script type="text/javascript" src="sweethome3d/lib/viewmodel.min.js"></script>
+    <script type="text/javascript" src="sweethome3d/lib/viewhome.min.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
