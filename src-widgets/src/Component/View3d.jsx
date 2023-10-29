@@ -2,6 +2,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { useEffect, useRef, useState } from 'react';
 import { MenuItem, Select, ToggleButton, ToggleButtonGroup } from '@mui/material';
 
+import homeUrl from '../lib/default.sh3d';
+// const homeUrl = 'http://localhost:8082/vis-2.0/main/default.sh3d';
+
 export function rgb2color(r, g, b) {
     return -1 * ((0xFF - r) << 16 | (0xFF - g) << 8 | (0xFF - b) & 0xFF);
 }
@@ -9,6 +12,7 @@ export function rgb2color(r, g, b) {
 const View3d = props => {
     const [hpc, setHpc] = useState(null);
     const canvasRef = useRef(null);
+    const shadowRef = useRef(null);
     const [progress, setProgress] = useState(0);
     const [progressVisible, setProgressVisible] = useState(true);
     const [progressLabel, setProgressLabel] = useState('');
@@ -18,7 +22,6 @@ const View3d = props => {
 
     useEffect(() => {
         let HPC;
-        const homeUrl = 'sweethome3d/default.sh3d';
         const onerror = err => {
             if (err === 'No WebGL') {
                 alert("Sorry, your browser doesn't support WebGL.");
@@ -29,7 +32,6 @@ const View3d = props => {
             }
         };
         const onprogression = (part, info, percentage) => {
-            console.log(part, info, percentage);
             if (part === window.HomeRecorder.READING_HOME) {
             // Home loading is finished
                 setProgress(percentage * 100);
@@ -74,7 +76,6 @@ const View3d = props => {
 
             setProgressLabel(`${(percentage ? `${Math.floor(percentage * 100)}% ` : '') + part} ${info}`);
         };
-
         // Display home in canvas 3D
         // Mouse and keyboard navigation explained at
         // http://sweethome3d.cvs.sf.net/viewvc/sweethome3d/SweetHome3D/src/com/eteks/sweethome3d/viewcontroller/resources/help/en/editing3DView.html
@@ -102,13 +103,13 @@ const View3d = props => {
         );
         setHpc(HPC);
         props.HpcCallback && props.HpcCallback(HPC);
-        console.log('loaded');
     }, []);
 
     return <div style={{
         flex:1, width: '100%', height: '100%', display: 'flex', flexDirection: 'column',
     }}
     >
+        <div ref={shadowRef}></div>
         <div style={{ flex:1, minHeight: 0 }}>
             <canvas
                 className="viewerComponent"

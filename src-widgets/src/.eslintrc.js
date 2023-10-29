@@ -21,6 +21,7 @@ module.exports = {
         'only-warn',
         'react',
     ],
+    ignorePatterns: ['lib/*.js'],
     rules: {
         'arrow-parens': [1, 'as-needed'],
         'react/jsx-indent': 'off',
