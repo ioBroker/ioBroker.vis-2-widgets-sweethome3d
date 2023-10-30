@@ -25,6 +25,10 @@ class App extends WidgetDemoApp {
 
         this.state.disabled = JSON.parse(window.localStorage.getItem('disabled')) || {};
 
+        this.state.data3d = JSON.parse(window.localStorage.getItem('data3d')) || {
+            items: [],
+        };
+
         // init translations
         I18n.extendTranslations(translations);
 
@@ -51,11 +55,16 @@ class App extends WidgetDemoApp {
                     width: 800,
                     height: 600,
                 }}
+                onChangeSettings={data3d => {
+                    this.setState({ data3d });
+                    window.localStorage.setItem('data3d', JSON.stringify(data3d));
+                }}
                 data={{
                     name: 'Actual temperature',
                     timeInterval: 6,
                     'oid-temperature': 'system.adapter.admin.0.memHeapTotal',
                     'oid-humidity': 'system.adapter.admin.0.memHeapUsed',
+                    settings: this.state.data3d,
                 }}
             />,
         };

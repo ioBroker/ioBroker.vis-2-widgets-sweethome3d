@@ -17,6 +17,7 @@ import jsXmlSaxParser from './lib/jsXmlSaxParser.min.txt';
 import triangulator from './lib/triangulator.min.txt';
 import viewModel from './lib/viewmodel.min.txt';
 import viewHome from './lib/viewhome.min.txt';
+import SweetHome3dDialog from './Component/SweetHome3dDialog';
 
 const loadScript = function (url, onload) {
     return new Promise((resolve, reject) => {
@@ -130,11 +131,12 @@ class SweetHome3d extends Generic {
     }
 
     renderDialog() {
-        return <Dialog open={this.state.showDialog} onClose={() => this.setState({ showDialog: false })}>
-            <DialogContent>
-                <View3d onClick={this.onItemClick} />
-            </DialogContent>
-        </Dialog>;
+        return <SweetHome3dDialog
+            open={this.state.showDialog}
+            onClose={() => this.setState({ showDialog: false })}
+            settings={this.props.data.settings}
+            onChange={data => this.props.onChangeSettings(data)}
+        />;
     }
 
     onItemClick = (item, component3D, hpc) => {
@@ -171,7 +173,12 @@ class SweetHome3d extends Generic {
         const content = <>
             {this.state.showDialog ? null : <View3d onClick={this.onItemClick} />}
             {this.renderDialog()}
-            <Button onClick={() => this.setState({ showDialog: true })}>Open dialog</Button>
+            <Button
+                variant="contained"
+                onClick={() => this.setState({ showDialog: true })}
+            >
+Open dialog
+            </Button>
         </>;
 
         return this.wrapContent(

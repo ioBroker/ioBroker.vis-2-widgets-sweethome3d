@@ -1,8 +1,11 @@
 import { v4 as uuidv4 } from 'uuid';
 import { useEffect, useRef, useState } from 'react';
-import { MenuItem, Select, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import {
+    MenuItem, Select, ToggleButton, ToggleButtonGroup,
+} from '@mui/material';
 
 import homeUrl from '../lib/default.sh3d';
+import Generic from '../Generic';
 // const homeUrl = 'http://localhost:8082/vis-2.0/main/default.sh3d';
 
 export function rgb2color(r, g, b) {
@@ -61,7 +64,7 @@ const View3d = props => {
                     const items = HOME.getSelectableViewableItems();
                     // console.log(items);
                     const component3D = HPC.getComponent3D();
-                    viewerCanvas.addEventListener('click', e => {
+                    viewerCanvas && viewerCanvas.addEventListener('click', e => {
                         const x = e.clientX - canvasRef.current.getBoundingClientRect().left;
                         const y = e.clientY - canvasRef.current.getBoundingClientRect().top;
                         const item = component3D.getClosestSelectableItemAt(x, y);
@@ -103,6 +106,10 @@ const View3d = props => {
         );
         setHpc(HPC);
         props.HpcCallback && props.HpcCallback(HPC);
+
+        return () => {
+            HPC && HPC.dispose();
+        };
     }, []);
 
     return <div style={{
@@ -143,13 +150,14 @@ const View3d = props => {
                     }}
                 >
                     <ToggleButton value="virtualVisit">
-                    Virtual visit
+                        {Generic.t('Virtual visit')}
                     </ToggleButton>
                     <ToggleButton value="aerial">
-                    Aerial view
+                        {Generic.t('Aerial view')}
                     </ToggleButton>
                 </ToggleButtonGroup>
                 <Select
+                    variant="standard"
                     value={selectedLevel}
                     onChange={e => {
                         hpc.startRotationAnimationAfterLoading = false;
