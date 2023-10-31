@@ -9,6 +9,7 @@ import Generic from '../Generic';
 // const homeUrl = 'http://localhost:8082/vis-2.0/main/default.sh3d';
 
 export function rgb2color(r, g, b) {
+    // eslint-disable-next-line
     return -1 * ((0xFF - r) << 16 | (0xFF - g) << 8 | (0xFF - b) & 0xFF);
 }
 
@@ -55,14 +56,16 @@ const View3d = props => {
                     setLevels(_levels.reverse());
                     setProgressVisible(false);
 
-                    const HOME = HPC.getHome();
+                    // const HOME = HPC.getHome();
                     // here the model is loaded
-                    HOME.addFurnitureListener(e => {
-                        // console.log(e);
-                    });
+                    // HOME.addFurnitureListener(e => {
+                    // console.log(e);
+                    // });
                     const viewerCanvas = canvasRef.current;
-                    const items = HOME.getSelectableViewableItems();
-                    // console.log(items);
+                    const items = HPC.getHome().getHomeObjects();
+                    items.forEach(item => {
+                        item.originalColor = item.object3D?.userData?.color;
+                    });
                     const component3D = HPC.getComponent3D();
                     viewerCanvas && viewerCanvas.addEventListener('click', e => {
                         const x = e.clientX - canvasRef.current.getBoundingClientRect().left;
@@ -72,6 +75,7 @@ const View3d = props => {
                             props.onClick && props.onClick(item, component3D, HPC);
                         }
                     });
+                    props.onLoad && props.onLoad();
                 }
             }
 

@@ -33,7 +33,8 @@ const SweetHome3dDialog = props => {
 
         if (selectItemRef() !== null) {
             const items = JSON.parse(JSON.stringify(settingsRef().items));
-            items[selectItemRef()].id = item.id;
+            // items[selectItemRef()].id = item.id;
+            items[selectItemRef()].id = hpc.getHome().getHomeObjects().findIndex(_item => _item.id === item.id);
             setSettings({ ...settings, items });
             setSelectItem(null);
         }
@@ -107,9 +108,9 @@ const SweetHome3dDialog = props => {
                                 <Button
                                     variant="contained"
                                     onClick={() => {
-                                        const homeItems = hpc.getHome().getSelectableViewableItems();
+                                        const homeItems = hpc.getHome().getHomeObjects();
                                         console.log(homeItems);
-                                        const homeItem = homeItems.find(_item => _item.id === item.id);
+                                        const homeItem = homeItems[item.id];
                                         if (homeItem) {
                                             const color = homeItem.object3D.userData.color;
                                             homeItem.object3D.userData.color = rgb2color(0, 255, 0);
