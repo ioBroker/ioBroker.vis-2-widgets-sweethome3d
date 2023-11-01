@@ -44,12 +44,6 @@
     "eslintConfig": {
         "extends": "react-app"
     },
-    "proxy": {
-        "/vis-2.0/": {
-            "target": "http://localhost:8082",
-            "ws": true
-        }
-    },
     "homepage": ".",
     "browserslist": [
         ">0.2%",

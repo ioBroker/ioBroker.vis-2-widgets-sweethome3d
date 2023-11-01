@@ -57,6 +57,7 @@ class SweetHome3d extends Generic {
             { file: viewHome, loaded: false },
         ];
         this.state.subscriptions = [];
+        this.state.viewLoaded = false;
     }
 
     static getWidgetInfo() {
@@ -102,6 +103,9 @@ class SweetHome3d extends Generic {
 
     onState = (id, state) => {
         console.log(id, state);
+        if (!this.state.viewLoaded) {
+            return;
+        }
         if (this.state.hpc && this.state.hpc.getHome()) {
             this.state.rxData.settings.items.forEach(item => {
                 if (item.oid1 === id) {
@@ -109,12 +113,21 @@ class SweetHome3d extends Generic {
                     const homeItem = homeItems[item.id];
                     if (homeItem) {
                         if (item.oid1type === 'show') {
-                            homeItem.visible = state.val;
+                            homeItem.visible = !!state.val;
                             const component3D = this.state.hpc.getComponent3D();
                             component3D.updateObjects([homeItem]);
                         }
                         if (item.oid1type === 'color') {
                             homeItem.object3D.userData.color = state.val ? rgb2color(0, 255, 0) : homeItem.originalColor;
+                            const component3D = this.state.hpc.getComponent3D();
+                            component3D.updateObjects([homeItem]);
+                        }
+                        if (item.oid1type === 'open') {
+                            if (state.val) {
+                                homeItem.angle = homeItem.originalAngle + 45 * (Math.PI / 180);
+                            } else {
+                                homeItem.angle = homeItem.originalAngle;
+                            }
                             const component3D = this.state.hpc.getComponent3D();
                             component3D.updateObjects([homeItem]);
                         }
@@ -182,8 +195,10 @@ class SweetHome3d extends Generic {
             settings={this.state.rxData.settings}
             onChange={data => {
                 this.props.onChangeSettings(data);
+                this.setState({ rxData: { ...this.state.rxData, settings: data } });
                 setTimeout(() => this.propertiesUpdate(), 1000);
             }}
+            socket={this.props.context.socket}
         />;
     }
 
@@ -194,16 +209,13 @@ class SweetHome3d extends Generic {
 
         // item.visible = !item.visible;
 
-        if (item.doorOrWindow) {
-            if (!item.originalAngle) {
-                item.originalAngle = item.angle;
-            }
-            if (item.angle === item.originalAngle) {
-                item.angle += 10;
-            } else {
-                item.angle = item.originalAngle;
-            }
-        }
+        // if (item.doorOrWindow) {
+        //     if (item.angle === item.originalAngle) {
+        //         item.angle += 10 * (Math.PI / 180);
+        //     } else {
+        //         item.angle = item.originalAngle;
+        //     }
+        // }
 
         const index = hpc.getHome().getHomeObjects().findIndex(_item => _item.id === item.id);
         this.state.rxData.settings.items.filter(_item => _item.id === index).forEach(_item => {
@@ -225,6 +237,8 @@ class SweetHome3d extends Generic {
     renderWidgetBody(props) {
         super.renderWidgetBody(props);
 
+        console.log(this.state.rxData.settings);
+
         if (!this.state.scriptsLoaded.every(script => script.loaded)) {
             return null;
         }
@@ -240,13 +254,19 @@ class SweetHome3d extends Generic {
                         this.props.context.socket.getState(oid).then(state => {
                             this.onState(oid, state);
                         });
+                        this.setState({
+                            viewLoaded: true,
+                        });
                     });
                 }}
             />}
             {this.renderDialog()}
             <Button
                 variant="contained"
-                onClick={() => this.setState({ showDialog: true })}
+                onClick={() => this.setState({
+                    showDialog: true,
+                    viewLoaded: false,
+                })}
             >
 Open dialog
             </Button>

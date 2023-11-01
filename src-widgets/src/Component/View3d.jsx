@@ -4,6 +4,7 @@ import {
     MenuItem, Select, ToggleButton, ToggleButtonGroup,
 } from '@mui/material';
 
+import { withStyles } from '@mui/styles';
 import homeUrl from '../lib/default.sh3d';
 import Generic from '../Generic';
 // const homeUrl = 'http://localhost:8082/vis-2.0/main/default.sh3d';
@@ -12,6 +13,9 @@ export function rgb2color(r, g, b) {
     // eslint-disable-next-line
     return -1 * ((0xFF - r) << 16 | (0xFF - g) << 8 | (0xFF - b) & 0xFF);
 }
+
+const styles = {
+};
 
 const View3d = props => {
     const [hpc, setHpc] = useState(null);
@@ -65,6 +69,7 @@ const View3d = props => {
                     const items = HPC.getHome().getHomeObjects();
                     items.forEach(item => {
                         item.originalColor = item.object3D?.userData?.color;
+                        item.originalAngle = item.angle;
                     });
                     const component3D = HPC.getComponent3D();
                     viewerCanvas && viewerCanvas.addEventListener('click', e => {
@@ -140,7 +145,11 @@ const View3d = props => {
                     {progressLabel}
                 </label>
             </div> : null}
-            <div>
+            <div style={{
+                display: 'flex',
+                gap: 8,
+            }}
+            >
                 <ToggleButtonGroup
                     value={view}
                     exclusive
@@ -176,4 +185,4 @@ const View3d = props => {
     </div>;
 };
 
-export default View3d;
+export default withStyles(styles)(View3d);
