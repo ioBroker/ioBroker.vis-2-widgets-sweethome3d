@@ -2,5 +2,19 @@
     "Virtual visit": "Virtual visit",
     "Aerial view": "Aerial view",
     "Select": "Select",
-    "Glow": "Glow"
+    "Highlight": "Highlight",
+    "Close": "Close",
+    "Save": "Save",
+    "On change": "On change",
+    "Action": "Action",
+    "Object id": "Object id",
+    "Name": "Name",
+    "Id": "Id",
+    "show": "Show",
+    "color": "Color",
+    "open": "Open",
+    "state": "State",
+    "widget": "Widget",
+    "Add item": "Add item",
+    "Delete": "Delete"
 }

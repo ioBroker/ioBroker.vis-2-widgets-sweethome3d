@@ -1,5 +1,5 @@
 import {
-    Button, Dialog, DialogActions, DialogContent, IconButton, MenuItem, Select, TextField,
+    Button, Dialog, DialogActions, DialogContent, IconButton, MenuItem, Select, TextField, Tooltip,
 } from '@mui/material';
 import { Add, Delete } from '@mui/icons-material';
 import { useEffect, useRef, useState } from 'react';
@@ -16,10 +16,14 @@ const useStateRef = initialValue => {
 };
 
 const styles = {
-    oid: {
+    field: {
         display: 'flex',
         gap: 8,
         alignItems: 'end',
+    },
+    header: {
+        paddingTop: 16,
+        fontWeight: 'bold',
     },
     fields: {
         display: 'flex',
@@ -41,10 +45,33 @@ const SweetHome3dDialogItem = props => {
 
     return <div key={item.id}>
         <div className={props.classes.fields}>
-            <div className={props.classes.oid}>
+            <div className={props.classes.field}>
                 <TextField
                     variant="standard"
-                    label="Id"
+                    label={Generic.t('Name')}
+                    value={item.name}
+                    onChange={e => {
+                        const items = JSON.parse(JSON.stringify(settings.items));
+                        items[i].name = e.target.value;
+                        setSettings({ ...settings, items });
+                    }}
+                    disabled={select}
+                />
+                <Tooltip title={Generic.t('Delete')}>
+                    <IconButton onClick={() => {
+                        const items = JSON.parse(JSON.stringify(settings.items));
+                        items.splice(i, 1);
+                        setSettings({ ...settings, items });
+                    }}
+                    >
+                        <Delete />
+                    </IconButton>
+                </Tooltip>
+            </div>
+            <div className={props.classes.field}>
+                <TextField
+                    variant="standard"
+                    label={Generic.t('Id')}
                     value={item.id}
                     onChange={e => {
                         const items = JSON.parse(JSON.stringify(settings.items));
@@ -87,10 +114,13 @@ const SweetHome3dDialogItem = props => {
                     color="grey"
                     disabled={select}
                 >
-                    {Generic.t('Glow')}
+                    {Generic.t('Highlight')}
                 </Button>
             </div>
-            <div className={props.classes.oid}>
+            <div className={props.classes.header}>
+                {Generic.t('On change')}
+            </div>
+            <div className={props.classes.field}>
                 <Select
                     variant="standard"
                     value={item.oid1type}
@@ -101,11 +131,13 @@ const SweetHome3dDialogItem = props => {
                     }}
                     disabled={select}
                 >
-                    {['show', 'color', 'open'].map(type => <MenuItem key={type} value={type}>{type}</MenuItem>)}
+                    {['show', 'color', 'open'].map(type => <MenuItem key={type} value={type}>
+                        {Generic.t(type)}
+                    </MenuItem>)}
                 </Select>
                 <TextField
                     variant="standard"
-                    label="Oid 1"
+                    label={Generic.t('Object id')}
                     value={item.oid1}
                     onChange={e => {
                         const items = JSON.parse(JSON.stringify(settings.items));
@@ -140,7 +172,10 @@ const SweetHome3dDialogItem = props => {
                     socket={props.socket}
                 />}
             </div>
-            <div className={props.classes.oid}>
+            <div className={props.classes.header}>
+                {Generic.t('Action')}
+            </div>
+            <div className={props.classes.field}>
                 <Select
                     variant="standard"
                     value={item.oid2type}
@@ -151,11 +186,13 @@ const SweetHome3dDialogItem = props => {
                     }}
                     disabled={select}
                 >
-                    {['state', 'widget'].map(type => <MenuItem key={type} value={type}>{type}</MenuItem>)}
+                    {['state', 'widget'].map(type => <MenuItem key={type} value={type}>
+                        {Generic.t(type)}
+                    </MenuItem>)}
                 </Select>
                 <TextField
                     variant="standard"
-                    label="Oid 2"
+                    label={Generic.t('Object id')}
                     value={item.oid2}
                     onChange={e => {
                         const items = JSON.parse(JSON.stringify(settings.items));
@@ -190,16 +227,6 @@ const SweetHome3dDialogItem = props => {
                     socket={props.socket}
                 />}
             </div>
-            <div>
-                <IconButton onClick={() => {
-                    const items = JSON.parse(JSON.stringify(settings.items));
-                    items.splice(i, 1);
-                    setSettings({ ...settings, items });
-                }}
-                >
-                    <Delete />
-                </IconButton>
-            </div>
         </div>
     </div>;
 };
@@ -210,6 +237,8 @@ const SweetHome3dDialog = props => {
     });
     const [selectItem, setSelectItem, selectItemRef] = useStateRef(null);
     const [dialogs, setDialogs] = useState({});
+
+    const [currentItem, setCurrentItem] = useState(0);
 
     useEffect(() => {
         if (props.settings) {
@@ -264,32 +293,56 @@ const SweetHome3dDialog = props => {
                     <View3d onClick={onItemClick} HpcCallback={_hpc => setHpc(_hpc)} />
                 </div>
                 <div style={{ flex: 1, height: '100%', overflow: 'auto' }}>
-                    <IconButton onClick={() => {
-                        const items = JSON.parse(JSON.stringify(settings.items));
-                        items.push({
-                            id: '', oid1: '', oid1type: 'show', oid2: '', oid2type: 'state',
-                        });
-                        setSettings({ ...settings, items });
+                    <div style={{
+                        width: '100%',
+                        display: 'flex',
+                        gap: 20,
                     }}
                     >
-                        <Add />
-                    </IconButton>
-                    {
-                        settings.items.map((item, i) => <SweetHome3dDialogItem
-                            key={i}
-                            item={item}
-                            i={i}
-                            settings={settings}
-                            setSettings={setSettings}
-                            selectItem={selectItem}
-                            setSelectItem={setSelectItem}
-                            dialogs={dialogs}
-                            setDialogs={setDialogs}
-                            select={select}
-                            hpc={hpc}
-                            {...props}
-                        />)
-                    }
+                        <div>
+                            <Tooltip title={Generic.t('Add item')}>
+                                <IconButton onClick={() => {
+                                    const items = JSON.parse(JSON.stringify(settings.items));
+                                    items.push({
+                                        name: 'Item',
+                                        id: '',
+                                        oid1: '',
+                                        oid1type: 'show',
+                                        oid2: '',
+                                        oid2type: 'state',
+                                    });
+                                    setSettings({ ...settings, items });
+                                }}
+                                >
+                                    <Add />
+                                </IconButton>
+                            </Tooltip>
+                            {
+                                settings.items.map((item, i) => <MenuItem
+                                    key={i}
+                                    onClick={() => setCurrentItem(i)}
+                                    selected={currentItem === i}
+                                >
+                                    {item.name || item.id}
+                                </MenuItem>)
+                            }
+                        </div>
+                        <div>
+                            {settings.items[currentItem] && <SweetHome3dDialogItem
+                                {...props}
+                                i={currentItem}
+                                item={settings.items[currentItem]}
+                                settings={settings}
+                                setSettings={setSettings}
+                                selectItem={selectItem}
+                                setSelectItem={setSelectItem}
+                                dialogs={dialogs}
+                                setDialogs={setDialogs}
+                                select={select}
+                                hpc={hpc}
+                            />}
+                        </div>
+                    </div>
                 </div>
             </div>
         </DialogContent>
@@ -299,7 +352,7 @@ const SweetHome3dDialog = props => {
                 onClick={props.onClose}
                 color="grey"
             >
-Close
+                {Generic.t('Close')}
             </Button>
             <Button
                 variant="contained"
@@ -309,7 +362,7 @@ Close
                 }}
                 disabled={disabled}
             >
-Save
+                {Generic.t('Save')}
             </Button>
         </DialogActions>
     </Dialog>;
