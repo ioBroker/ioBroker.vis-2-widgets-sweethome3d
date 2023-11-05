@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
 import { Button } from '@mui/material';
+import Color from 'color';
 import Generic from './Generic';
 import View3d, { rgb2color } from './Component/View3d';
 
@@ -118,7 +119,8 @@ class SweetHome3d extends Generic {
                             component3D.updateObjects([homeItem]);
                         }
                         if (item.oid1type === 'color') {
-                            homeItem.object3D.userData.color = state.val ? rgb2color(0, 255, 0) : homeItem.originalColor;
+                            const color = Color(item.color);
+                            homeItem.object3D.userData.color = state.val ? rgb2color(color.red(), color.green(), color.blue()) : homeItem.originalColor;
                             const component3D = this.state.hpc.getComponent3D();
                             component3D.updateObjects([homeItem]);
                         }

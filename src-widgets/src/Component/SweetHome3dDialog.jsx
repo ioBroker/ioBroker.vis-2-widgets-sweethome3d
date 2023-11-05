@@ -4,7 +4,7 @@ import {
 import { Add, Delete } from '@mui/icons-material';
 import { useEffect, useRef, useState } from 'react';
 import { withStyles } from '@mui/styles';
-import { SelectID } from '@iobroker/adapter-react-v5';
+import { SelectID, ColorPicker } from '@iobroker/adapter-react-v5';
 import View3d, { rgb2color } from './View3d';
 import Generic from '../Generic';
 
@@ -135,6 +135,14 @@ const SweetHome3dDialogItem = props => {
                         {Generic.t(type)}
                     </MenuItem>)}
                 </Select>
+                {item.oid1type === 'color' && <ColorPicker
+                    value={item.color || ''}
+                    onChange={color => {
+                        const items = JSON.parse(JSON.stringify(settings.items));
+                        items[i].color = color;
+                        setSettings({ ...settings, items });
+                    }}
+                />}
                 <TextField
                     variant="standard"
                     label={Generic.t('Object id')}
