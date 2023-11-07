@@ -98,7 +98,6 @@ const SweetHome3dDialogItem = props => {
                     variant="contained"
                     onClick={() => {
                         const homeItems = hpc.getHome().getHomeObjects();
-                        console.log(homeItems);
                         const homeItem = homeItems[item.id];
                         if (homeItem) {
                             const color = homeItem.object3D.userData.color;
@@ -142,6 +141,17 @@ const SweetHome3dDialogItem = props => {
                         items[i].color = color;
                         setSettings({ ...settings, items });
                     }}
+                />}
+                {item.oid1type === 'open' && <TextField
+                    variant="standard"
+                    label={Generic.t('Angle')}
+                    value={item.angle || 0}
+                    onChange={e => {
+                        const items = JSON.parse(JSON.stringify(settings.items));
+                        items[i].angle = e.target.value;
+                        setSettings({ ...settings, items });
+                    }}
+                    disabled={select}
                 />}
                 <TextField
                     variant="standard"
@@ -318,6 +328,8 @@ const SweetHome3dDialog = props => {
                                         oid1type: 'show',
                                         oid2: '',
                                         oid2type: 'state',
+                                        color: '#00ff00',
+                                        angle: 45,
                                     });
                                     setSettings({ ...settings, items });
                                 }}

@@ -34,12 +34,34 @@ function loadScript(url, onload) {
     });
 }
 
+const CustomSettings = props => {
+    const [open, setOpen] = React.useState(false);
+
+    return <>
+        <SweetHome3dDialog
+            open={open}
+            onClose={() => setOpen(false)}
+            settings={props.data.settings}
+            onChange={data => {
+                props.setData({ ...props.data, settings: data });
+            }}
+            socket={props.context.socket}
+        />
+        <Button
+            variant="contained"
+            onClick={() => setOpen(true)}
+        >
+            {Generic.t('Settings')}
+        </Button>
+    </>;
+};
+
 const styles = () => ({
 
 });
 
 class SweetHome3d extends Generic {
-    canvasRef = React.createRef();
+    divRef = React.createRef();
 
     constructor(props) {
         super(props);
@@ -85,6 +107,20 @@ class SweetHome3d extends Generic {
                             label: 'name',
                             hidden: '!!data.noCard',
                         },
+                        {
+                            name: 'settings',
+                            label: 'settings',
+                            default: {
+                                items: [],
+                            },
+                            component: (field, data, setData, props) => <CustomSettings
+                                field={field}
+                                data={data}
+                                setData={setData}
+                                context={props.context}
+                            />,
+                            type: 'custom',
+                        },
                     ],
                 },
             ],
@@ -103,7 +139,6 @@ class SweetHome3d extends Generic {
     }
 
     onState = (id, state) => {
-        console.log(id, state);
         if (!this.state.viewLoaded) {
             return;
         }
@@ -126,7 +161,7 @@ class SweetHome3d extends Generic {
                         }
                         if (item.oid1type === 'open') {
                             if (state.val) {
-                                homeItem.angle = homeItem.originalAngle + 45 * (Math.PI / 180);
+                                homeItem.angle = homeItem.originalAngle + (item.angle || 45) * (Math.PI / 180);
                             } else {
                                 homeItem.angle = homeItem.originalAngle;
                             }
@@ -135,31 +170,31 @@ class SweetHome3d extends Generic {
                         }
                     }
                 }
-                if (item.oid2 === id) {
-                    console.log(item);
-                }
             });
         }
     };
 
     async propertiesUpdate() {
-        this.state.subscriptions.forEach(subscription => this.props.context.socket.unsubscribeState(subscription));
-        this.setState({ subscriptions: [] });
-        this.state.rxData.settings.items.forEach(item => {
-            [1, 2].forEach(i => {
-                const oid = item[`oid${i}`];
-                if (oid && !this.state.subscriptions.includes(oid)) {
-                    this.props.context.socket.subscribeState(oid, this.onState);
-                    this.props.context.socket.getState(oid).then(state => {
-                        this.onState(oid, state);
-                    });
-                    this.setState(state => {
-                        state.subscriptions.push(oid);
-                        return state;
-                    });
-                }
-            });
-        });
+        if (!this.state.rxData.settings) {
+            return;
+        }
+        this.state.subscriptions.forEach(subscription => this.props.context.socket.unsubscribeState(subscription, this.onState));
+        this.setState({ subscriptions: [] }, () =>
+            this.state.rxData.settings.items.forEach(item => {
+                [1, 2].forEach(i => {
+                    const oid = item[`oid${i}`];
+                    if (oid && !this.state.subscriptions.includes(oid)) {
+                        this.props.context.socket.subscribeState(oid, this.onState);
+                        this.props.context.socket.getState(oid).then(state => {
+                            this.onState(oid, state);
+                        });
+                        this.setState(state => {
+                            state.subscriptions.push(oid);
+                            return state;
+                        });
+                    }
+                });
+            }));
     }
 
     async componentDidMount() {
@@ -239,13 +274,28 @@ class SweetHome3d extends Generic {
     renderWidgetBody(props) {
         super.renderWidgetBody(props);
 
-        console.log(this.state.rxData.settings);
-
         if (!this.state.scriptsLoaded.every(script => script.loaded)) {
             return null;
         }
 
-        const content = <>
+        if (this.divRef.current && (this.divRef.current.offsetWidth !== this.oldWidth || this.divRef.current.offsetHeight !== this.oldHeight)) {
+            if (this.state.hpc && this.state.hpc.getComponent3D()) {
+                this.state.hpc.getComponent3D().revalidate();
+            }
+            this.oldWidth = this.divRef.current.offsetWidth;
+            this.oldHeight = this.divRef.current.offsetHeight;
+        }
+
+        const content = <div
+            ref={this.divRef}
+            style={{
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                flex: 1,
+                height: 'calc(100% - 32px)',
+            }}
+        >
             {this.state.showDialog ? null : <View3d
                 onClick={this.onItemClick}
                 HpcCallback={_hpc => {
@@ -272,7 +322,7 @@ class SweetHome3d extends Generic {
             >
 Open dialog
             </Button>
-        </>;
+        </div>;
 
         return this.wrapContent(
             content,

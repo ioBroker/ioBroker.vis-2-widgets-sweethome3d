@@ -5,9 +5,9 @@ import {
 } from '@mui/material';
 
 import { withStyles } from '@mui/styles';
-import homeUrl from '../lib/default.sh3d';
+// import homeUrl from '../lib/default.sh3d';
+const homeUrl = 'http://localhost:8082/vis-2.0/main/default.sh3d';
 import Generic from '../Generic';
-// const homeUrl = 'http://localhost:8082/vis-2.0/main/default.sh3d';
 
 export function rgb2color(r, g, b) {
     // eslint-disable-next-line
