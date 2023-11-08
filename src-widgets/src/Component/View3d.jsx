@@ -5,9 +5,9 @@ import {
 } from '@mui/material';
 
 import { withStyles } from '@mui/styles';
-// import homeUrl from '../lib/default.sh3d';
-const homeUrl = 'http://localhost:8082/vis-2.0/main/default.sh3d';
 import Generic from '../Generic';
+// import homeUrl from '../lib/default.sh3d';
+// const homeUrl = 'http://localhost:8082/vis-2.0/main/default.sh3d';
 
 export function rgb2color(r, g, b) {
     // eslint-disable-next-line
@@ -15,6 +15,16 @@ export function rgb2color(r, g, b) {
 }
 
 const styles = {
+    canvas: { width: '100%', height:'100%' },
+    canvasContainer: { flex:1, minHeight: 0 },
+    toolbar: {
+        display: 'flex',
+        gap: 8,
+    },
+    container: {
+        flex:1, width: '100%', height: '100%', display: 'flex', flexDirection: 'column',
+    },
+    toolbarContainer: { width: '100%' },
 };
 
 const View3d = props => {
@@ -96,7 +106,7 @@ const View3d = props => {
         canvasRef.current.id = uuidv4();
         HPC = window.viewHome(
             canvasRef.current.id,    // Id of the canvas
-            homeUrl,           // URL or relative URL of the home to display
+            `http://localhost:8082/${props.homeUrl}`,           // URL or relative URL of the home to display
             onerror,           // Callback called in case of error
             onprogression,     // Callback called while loading
             {
@@ -119,37 +129,30 @@ const View3d = props => {
         return () => {
             HPC && HPC.dispose();
         };
-    }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [props.homeUrl]);
 
-    return <div style={{
-        flex:1, width: '100%', height: '100%', display: 'flex', flexDirection: 'column',
-    }}
-    >
+    return <div className={props.classes.container}>
         <div ref={shadowRef}></div>
-        <div style={{ flex:1, minHeight: 0 }}>
+        <div className={props.classes.canvasContainer}>
             <canvas
-                className="viewerComponent"
+                className={`viewerComponent ${props.classes.canvas}`}
                 ref={canvasRef}
-                style={{ width: '100%', height:'100%' }}
-                // style="background-color: #CCCCCC; border: 1px solid gray; outline:none; touch-action: none"
+                // eslint-disable-next-line jsx-a11y/tabindex-no-positive
                 tabIndex="1"
             ></canvas>
         </div>
-        <div style={{ width: '100%' }}>
+        <div className={props.classes.toolbarContainer}>
             {progressVisible ? <div>
                 <progress
                     value={progress}
                     max="200"
                 ></progress>
-                <label>
+                <span>
                     {progressLabel}
-                </label>
+                </span>
             </div> : null}
-            <div style={{
-                display: 'flex',
-                gap: 8,
-            }}
-            >
+            <div className={props.classes.toolbar}>
                 <ToggleButtonGroup
                     value={view}
                     exclusive

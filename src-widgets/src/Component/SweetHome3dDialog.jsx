@@ -4,7 +4,7 @@ import {
 import { Add, Delete } from '@mui/icons-material';
 import { useEffect, useRef, useState } from 'react';
 import { withStyles } from '@mui/styles';
-import { SelectID, ColorPicker } from '@iobroker/adapter-react-v5';
+import { SelectID, ColorPicker, SelectFile } from '@iobroker/adapter-react-v5';
 import View3d, { rgb2color } from './View3d';
 import Generic from '../Generic';
 
@@ -36,6 +36,18 @@ const styles = {
         height: '100%',
         gap: 20,
     },
+    columnViewer: {
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 8,
+    },
+    columns: {
+        width: '100%',
+        display: 'flex',
+        gap: 20,
+    },
+    columnsContainer: { flex: 1, height: '100%', overflow: 'auto' },
 };
 
 const SweetHome3dDialogItem = props => {
@@ -255,6 +267,7 @@ const SweetHome3dDialog = props => {
     });
     const [selectItem, setSelectItem, selectItemRef] = useStateRef(null);
     const [dialogs, setDialogs] = useState({});
+    const [fileDialog, setFileDialog] = useState(false);
 
     const [currentItem, setCurrentItem] = useState(0);
 
@@ -262,14 +275,15 @@ const SweetHome3dDialog = props => {
         if (props.settings) {
             setSettings(props.settings);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.open]);
 
-    const [hpc, setHpc, hpcRef] = useStateRef(null);
+    const [hpc, setHpc] = useStateRef(null);
 
     const disabled = JSON.stringify(settings) === JSON.stringify(props.settings);
     const select = selectItem !== null;
 
-    const onItemClick = (item, component3D, hpc) => {
+    const onItemClick = (item, component3D, _hpc) => {
         const color = item.object3D.userData.color;
         item.object3D.userData.color = rgb2color(0, 255, 0);
         component3D.updateObjects([item]);
@@ -277,20 +291,20 @@ const SweetHome3dDialog = props => {
         if (selectItemRef() !== null) {
             const items = JSON.parse(JSON.stringify(settingsRef().items));
             // items[selectItemRef()].id = item.id;
-            items[selectItemRef()].id = hpc.getHome().getHomeObjects().findIndex(_item => _item.id === item.id);
+            items[selectItemRef()].id = _hpc.getHome().getHomeObjects().findIndex(_item => _item.id === item.id);
             setSettings({ ...settings, items });
             setSelectItem(null);
         }
 
         // item.visible = !item.visible;
 
-        if (item.doorOrWindow) {
-            if (item.angle === item.originalAngle) {
-                item.angle += 10 * (Math.PI / 180);
-            } else {
-                item.angle = item.originalAngle;
-            }
-        }
+        // if (item.doorOrWindow) {
+        //     if (item.angle === item.originalAngle) {
+        //         item.angle += 10 * (Math.PI / 180);
+        //     } else {
+        //         item.angle = item.originalAngle;
+        //     }
+        // }
 
         setTimeout(() => {
             item.object3D.userData.color = color;
@@ -302,21 +316,37 @@ const SweetHome3dDialog = props => {
             <div
                 className={props.classes.dialog}
             >
-                <div style={{
-                    flex: 1,
-                    display: 'flex',
-                    flexDirection: 'column',
-                }}
-                >
-                    <View3d onClick={onItemClick} HpcCallback={_hpc => setHpc(_hpc)} />
+                <div className={props.classes.columnViewer}>
+                    <div className={props.classes.field}>
+                        {fileDialog && <SelectFile
+                            title={Generic.t('Select file')}
+                            onClose={() => setFileDialog(false)}
+                            showToolbar
+                            imagePrefix="../"
+                            selected={settings.file || ''}
+                            filterFiles={['sh3d']}
+                            onOk={selected => {
+                                setSettings({ ...settings, file: selected });
+                            }}
+                            socket={props.socket}
+                        />}
+                        <TextField variant="standard" value={settings.file || ''} />
+                        <Button
+                            variant="contained"
+                            onClick={() => setFileDialog(true)}
+                            color="grey"
+                        >
+                                ...
+                        </Button>
+                    </div>
+                    <View3d
+                        homeUrl={settings.file}
+                        onClick={onItemClick}
+                        HpcCallback={_hpc => setHpc(_hpc)}
+                    />
                 </div>
-                <div style={{ flex: 1, height: '100%', overflow: 'auto' }}>
-                    <div style={{
-                        width: '100%',
-                        display: 'flex',
-                        gap: 20,
-                    }}
-                    >
+                <div className={props.classes.columnsContainer}>
+                    <div className={props.classes.columns}>
                         <div>
                             <Tooltip title={Generic.t('Add item')}>
                                 <IconButton onClick={() => {

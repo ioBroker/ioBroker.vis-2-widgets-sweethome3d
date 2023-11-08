@@ -10,7 +10,7 @@ class Generic extends (window.visRxWidget || VisRxWidget) {
     getPropertyValue = stateName => this.state.values[`${this.state.rxData[stateName]}.val`];
 
     static getI18nPrefix() {
-        return 'vis_2_widgets_material_';
+        return 'vis_2_widgets_sweethome3d_';
     }
 
     // TODO: remove this method when vis-2-widgets-react-dev is updated

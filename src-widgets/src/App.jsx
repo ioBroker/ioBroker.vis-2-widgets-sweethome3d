@@ -66,6 +66,7 @@ class App extends WidgetDemoApp {
                     'oid-humidity': 'system.adapter.admin.0.memHeapUsed',
                     settings: this.state.data3d,
                 }}
+                fake
             />,
         };
 

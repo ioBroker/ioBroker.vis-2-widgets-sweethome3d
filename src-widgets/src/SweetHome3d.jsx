@@ -27,6 +27,7 @@ function loadScript(url, onload) {
             onload();
             resolve();
         };
+        script.onerror = reject;
         script.src = url;
         script.type = 'text/javascript';
 
@@ -40,7 +41,10 @@ const CustomSettings = props => {
     return <>
         <SweetHome3dDialog
             open={open}
-            onClose={() => setOpen(false)}
+            onClose={() => {
+                setOpen(false);
+                window.hpcShowViewer && window.hpcShowViewer();
+            }}
             settings={props.data.settings}
             onChange={data => {
                 props.setData({ ...props.data, settings: data });
@@ -49,7 +53,10 @@ const CustomSettings = props => {
         />
         <Button
             variant="contained"
-            onClick={() => setOpen(true)}
+            onClick={() => {
+                setOpen(true);
+                window.hpcHideViewer && window.hpcHideViewer();
+            }}
         >
             {Generic.t('Settings')}
         </Button>
@@ -57,7 +64,13 @@ const CustomSettings = props => {
 };
 
 const styles = () => ({
-
+    content: {
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        flex: 1,
+        height: 'calc(100% - 32px)',
+    },
 });
 
 class SweetHome3d extends Generic {
@@ -138,6 +151,10 @@ class SweetHome3d extends Generic {
         return SweetHome3d.getWidgetInfo();
     }
 
+    hideViewer = () => this.setState({ hideViewer: true });
+
+    showViewer = () => this.setState({ hideViewer: false });
+
     onState = (id, state) => {
         if (!this.state.viewLoaded) {
             return;
@@ -198,6 +215,8 @@ class SweetHome3d extends Generic {
     }
 
     async componentDidMount() {
+        window.hpcHideViewer = this.hideViewer;
+        window.hpcShowViewer = this.showViewer;
         super.componentDidMount();
         for (const i in this.state.scriptsLoaded) {
             const script = this.state.scriptsLoaded[i];
@@ -214,6 +233,8 @@ class SweetHome3d extends Generic {
     }
 
     componentWillUnmount() {
+        window.hpcHideViewer = null;
+        window.hpcShowViewer = null;
         super.componentWillUnmount();
     }
 
@@ -274,6 +295,10 @@ class SweetHome3d extends Generic {
     renderWidgetBody(props) {
         super.renderWidgetBody(props);
 
+        const widgetCount = this.props.context.views &&
+        this.props.view &&
+        Object.values(this.props.context.views[this.props.view].widgets).filter(widget => widget.tpl === 'tplMaterial2SweetHome3d').length;
+
         if (!this.state.scriptsLoaded.every(script => script.loaded)) {
             return null;
         }
@@ -288,15 +313,10 @@ class SweetHome3d extends Generic {
 
         const content = <div
             ref={this.divRef}
-            style={{
-                width: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                flex: 1,
-                height: 'calc(100% - 32px)',
-            }}
+            className={this.props.classes.content}
         >
-            {this.state.showDialog ? null : <View3d
+            {this.state.showDialog || this.state.hideViewer || widgetCount > 1 ? null : <View3d
+                homeUrl={this.state.rxData.settings.file}
                 onClick={this.onItemClick}
                 HpcCallback={_hpc => {
                     this.setState({ hpc: _hpc });
@@ -312,16 +332,18 @@ class SweetHome3d extends Generic {
                     });
                 }}
             />}
-            {this.renderDialog()}
-            <Button
-                variant="contained"
-                onClick={() => this.setState({
-                    showDialog: true,
-                    viewLoaded: false,
-                })}
-            >
+            {this.props.fake && <>
+                {this.renderDialog()}
+                <Button
+                    variant="contained"
+                    onClick={() => this.setState({
+                        showDialog: true,
+                        viewLoaded: false,
+                    })}
+                >
 Open dialog
-            </Button>
+                </Button>
+            </>}
         </div>;
 
         return this.wrapContent(
