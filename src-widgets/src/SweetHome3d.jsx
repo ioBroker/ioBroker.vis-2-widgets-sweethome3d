@@ -66,10 +66,9 @@ const CustomSettings = props => {
 const styles = () => ({
     content: {
         width: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        flex: 1,
-        height: 'calc(100% - 32px)',
+        display: 'grid',
+        gridTemplateRows: 'auto min-content min-content',
+        height: '100%',
     },
 });
 

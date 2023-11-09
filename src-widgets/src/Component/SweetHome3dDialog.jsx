@@ -31,23 +31,27 @@ const styles = {
         gap: 8,
     },
     dialog: {
-        display: 'flex',
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
         width: '100%',
         height: '100%',
         gap: 20,
     },
     columnViewer: {
-        flex: 1,
-        display: 'flex',
-        flexDirection: 'column',
+        display: 'grid',
+        gridTemplateRows: 'min-content auto',
+        overflow: 'auto',
         gap: 8,
     },
+    columnRight: { overflow: 'auto' },
     columns: {
         width: '100%',
-        display: 'flex',
+        height: '100%',
+        display: 'grid',
+        gridTemplateColumns: 'min-content auto',
         gap: 20,
     },
-    columnsContainer: { flex: 1, height: '100%', overflow: 'auto' },
+    columnsContainer: { overflow: 'auto' },
 };
 
 const SweetHome3dDialogItem = props => {
@@ -347,7 +351,7 @@ const SweetHome3dDialog = props => {
                 </div>
                 <div className={props.classes.columnsContainer}>
                     <div className={props.classes.columns}>
-                        <div>
+                        <div className={props.classes.columnRight}>
                             <Tooltip title={Generic.t('Add item')}>
                                 <IconButton onClick={() => {
                                     const items = JSON.parse(JSON.stringify(settings.items));
@@ -377,7 +381,7 @@ const SweetHome3dDialog = props => {
                                 </MenuItem>)
                             }
                         </div>
-                        <div>
+                        <div className={props.classes.columnRight}>
                             {settings.items[currentItem] && <SweetHome3dDialogItem
                                 {...props}
                                 i={currentItem}

@@ -22,7 +22,7 @@ const styles = {
         gap: 8,
     },
     container: {
-        flex:1, width: '100%', height: '100%', display: 'flex', flexDirection: 'column',
+        display: 'grid', gridTemplateRows: 'auto min-content', overflow: 'auto',
     },
     toolbarContainer: { width: '100%' },
 };
@@ -30,7 +30,6 @@ const styles = {
 const View3d = props => {
     const [hpc, setHpc] = useState(null);
     const canvasRef = useRef(null);
-    const shadowRef = useRef(null);
     const [progress, setProgress] = useState(0);
     const [progressVisible, setProgressVisible] = useState(true);
     const [progressLabel, setProgressLabel] = useState('');
@@ -133,7 +132,6 @@ const View3d = props => {
     }, [props.homeUrl]);
 
     return <div className={props.classes.container}>
-        <div ref={shadowRef}></div>
         <div className={props.classes.canvasContainer}>
             <canvas
                 className={`viewerComponent ${props.classes.canvas}`}
