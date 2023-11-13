@@ -23,5 +23,6 @@
     "name": "Name",
     "without_card": "Without card",
     "sweet_home_3d": "Sweet home 3d",
-    "set_label": "Sweet home 3d"
+    "set_label": "Sweet home 3d",
+    "Only one widget per view is supported": "Only one widget per view is supported"
 }

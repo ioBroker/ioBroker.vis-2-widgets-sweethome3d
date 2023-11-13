@@ -59,6 +59,8 @@ const SweetHome3dDialogItem = props => {
         item, i, settings, setSettings, selectItem, setSelectItem, dialogs, setDialogs, select, hpc,
     } = props;
 
+    const widgets = props.moreProps.context.views[props.moreProps.selectedView].widgets;
+
     return <div key={item.id}>
         <div className={props.classes.fields}>
             <div className={props.classes.field}>
@@ -224,7 +226,7 @@ const SweetHome3dDialogItem = props => {
                         {Generic.t(type)}
                     </MenuItem>)}
                 </Select>
-                <TextField
+                {item.oid2type === 'state' && <TextField
                     variant="standard"
                     label={Generic.t('Object id')}
                     value={item.oid2}
@@ -234,7 +236,29 @@ const SweetHome3dDialogItem = props => {
                         setSettings({ ...settings, items });
                     }}
                     disabled={select}
-                />
+                />}
+                {item.oid2type === 'widget' && <Select
+                    variant="standard"
+                    value={item.widget}
+                    onChange={e => {
+                        const items = JSON.parse(JSON.stringify(settings.items));
+                        items[i].widget = e.target.value;
+                        setSettings({ ...settings, items });
+                    }}
+                    disabled={select}
+                >
+                    {Object.keys(widgets).map(id => {
+                        const widget = widgets[id];
+                        if (!widget.data.useAsDialog) {
+                            return null;
+                        }
+                        return <MenuItem key={id} value={id}>
+                            {id}
+                            {' - '}
+                            {widget.tpl}
+                        </MenuItem>;
+                    })}
+                </Select>}
                 <Button
                     onClick={() => {
                         const _dialogs = JSON.parse(JSON.stringify(dialogs));
@@ -290,6 +314,56 @@ const SweetHome3dDialog = props => {
     const onItemClick = (item, component3D, _hpc) => {
         const color = item.object3D.userData.color;
         item.object3D.userData.color = rgb2color(0, 255, 0);
+
+        if (item.doorOrWindow) {
+            // const transformation = window.java.awt.geom.AffineTransform.getTranslateInstance(item.getX(), item.getY());
+            // transformation.rotate(item.getAngle());
+            // transformation.translate(1 * -item.getWidth() / 2, -item.getDepth() / 2);
+            item.modelTransformations = [
+                {
+                    getName: () => 'sweethome3d_hinge_1',
+                    getMatrix: () => [
+                        // [
+                        //     0.8848459,
+                        //     0,
+                        //     -0.46559626,
+                        //     -0.034006376
+                        // ],
+                        // [
+                        //     0,
+                        //     1,
+                        //     0,
+                        //     0
+                        // ],
+                        // [
+                        //     0.4661716,
+                        //     0,
+                        //     0.8848459,
+                        //     0.19492601
+                        // ]
+                        [
+                            0.8848459,
+                            0,
+                            -0.46559626,
+                            -0.034006376,
+                        ],
+                        [
+                            0,
+                            1,
+                            0,
+                            0,
+                        ],
+                        [
+                            0.4661716,
+                            0,
+                            0.8848459,
+                            0.19492601,
+                        ],
+                    ],
+                },
+                // transformation,
+            ];
+        }
         component3D.updateObjects([item]);
 
         if (selectItemRef() !== null) {

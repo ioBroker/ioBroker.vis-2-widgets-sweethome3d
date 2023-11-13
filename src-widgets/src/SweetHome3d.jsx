@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
-import { Button } from '@mui/material';
+import { Button, Dialog, DialogContent } from '@mui/material';
 import Color from 'color';
 import Generic from './Generic';
 import View3d, { rgb2color } from './Component/View3d';
@@ -38,6 +38,8 @@ function loadScript(url, onload) {
 const CustomSettings = props => {
     const [open, setOpen] = React.useState(false);
 
+    console.log(props.props);
+
     return <>
         <SweetHome3dDialog
             open={open}
@@ -50,6 +52,7 @@ const CustomSettings = props => {
                 props.setData({ ...props.data, settings: data });
             }}
             socket={props.context.socket}
+            moreProps={props.props}
         />
         <Button
             variant="contained"
@@ -93,6 +96,7 @@ class SweetHome3d extends Generic {
         ];
         this.state.subscriptions = [];
         this.state.viewLoaded = false;
+        this.state.widgetDialog = null;
     }
 
     static getWidgetInfo() {
@@ -130,6 +134,7 @@ class SweetHome3d extends Generic {
                                 data={data}
                                 setData={setData}
                                 context={props.context}
+                                props={props}
                             />,
                             type: 'custom',
                         },
@@ -259,6 +264,14 @@ class SweetHome3d extends Generic {
         />;
     }
 
+    renderWidgetDialog() {
+        return <Dialog open={!!this.state.widgetDialog} onClose={() => this.setState({ widgetDialog: null })}>
+            <DialogContent>
+                {this.state.widgetDialog && this.getWidgetInWidget(this.props.view, this.state.widgetDialog)}
+            </DialogContent>
+        </Dialog>;
+    }
+
     onItemClick = (item, component3D, hpc) => {
         // const color = item.object3D.userData.color;
         // item.object3D.userData.color = rgb2color(0, 255, 0);
@@ -281,6 +294,11 @@ class SweetHome3d extends Generic {
                     this.props.context.socket.getState(_item.oid2).then(state => {
                         this.props.context.socket.setState(_item.oid2, !state.val);
                     });
+                }
+                if (_item.oid2type === 'widget') {
+                    // this.setState({ widgetDialog: _item.widget });
+                    const refWidget = this.props.askView && this.props.askView('getRef', { id: _item.widget });
+                    refWidget?.onCommand('openDialog');
                 }
             }
         });
@@ -331,6 +349,10 @@ class SweetHome3d extends Generic {
                     });
                 }}
             />}
+            {widgetCount > 1 && <div style={{ textAlign: 'center' }}>
+                {Generic.t('Only one widget per view is supported')}
+            </div>}
+            {this.renderWidgetDialog()}
             {this.props.fake && <>
                 {this.renderDialog()}
                 <Button

@@ -79,6 +79,16 @@ const View3d = props => {
                     items.forEach(item => {
                         item.originalColor = item.object3D?.userData?.color;
                         item.originalAngle = item.angle;
+                        if (item.sashes?.length) {
+                            item.setSashes([new window.Sash(1, 2, 3, 4, 5)]);
+                            // item.object3D.update();
+                            // item.object3D.updateModelTransformations(item.object3D);
+                            item.object3D.updatePieceOfFurnitureModelTransformations();
+                            item.object3D.updatePieceOfFurnitureTransform();
+                            HPC.getComponent3D().revalidate();
+                            const component3D = HPC.getComponent3D();
+                            component3D.updateObjects([item]);
+                        }
                     });
                     const component3D = HPC.getComponent3D();
                     viewerCanvas && viewerCanvas.addEventListener('click', e => {
@@ -90,6 +100,7 @@ const View3d = props => {
                         }
                     });
                     props.onLoad && props.onLoad();
+                    console.log(items);
                 }
             }
 
