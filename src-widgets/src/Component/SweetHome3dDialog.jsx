@@ -52,6 +52,10 @@ const styles = {
         gap: 20,
     },
     columnsContainer: { overflow: 'auto' },
+    widget:{
+        display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'start',
+    },
+    widgetSubname: { fontSize: '80%', fontStyle: 'italic' },
 };
 
 const SweetHome3dDialogItem = props => {
@@ -116,7 +120,7 @@ const SweetHome3dDialogItem = props => {
                     variant="contained"
                     onClick={() => {
                         const homeItems = hpc.getHome().getHomeObjects();
-                        const homeItem = homeItems[item.id];
+                        const homeItem = homeItems.find(_item => _item.name === item.id);
                         if (homeItem) {
                             const color = homeItem.object3D.userData.color;
                             homeItem.object3D.userData.color = rgb2color(0, 255, 0);
@@ -252,10 +256,9 @@ const SweetHome3dDialogItem = props => {
                         if (!widget.data.useAsDialog) {
                             return null;
                         }
-                        return <MenuItem key={id} value={id}>
-                            {id}
-                            {' - '}
-                            {widget.tpl}
+                        return <MenuItem key={id} value={id} className={props.classes.widget}>
+                            <div>{id}</div>
+                            <div className={props.classes.widgetSubname}>{widget.tpl}</div>
                         </MenuItem>;
                     })}
                 </Select>}
@@ -319,57 +322,57 @@ const SweetHome3dDialog = props => {
             // const transformation = window.java.awt.geom.AffineTransform.getTranslateInstance(item.getX(), item.getY());
             // transformation.rotate(item.getAngle());
             // transformation.translate(1 * -item.getWidth() / 2, -item.getDepth() / 2);
-            item.modelTransformations = [
-                {
-                    getName: () => 'sweethome3d_hinge_1',
-                    getMatrix: () => [
-                        // [
-                        //     0.8848459,
-                        //     0,
-                        //     -0.46559626,
-                        //     -0.034006376
-                        // ],
-                        // [
-                        //     0,
-                        //     1,
-                        //     0,
-                        //     0
-                        // ],
-                        // [
-                        //     0.4661716,
-                        //     0,
-                        //     0.8848459,
-                        //     0.19492601
-                        // ]
-                        [
-                            0.8848459,
-                            0,
-                            -0.46559626,
-                            -0.034006376,
-                        ],
-                        [
-                            0,
-                            1,
-                            0,
-                            0,
-                        ],
-                        [
-                            0.4661716,
-                            0,
-                            0.8848459,
-                            0.19492601,
-                        ],
-                    ],
-                },
-                // transformation,
-            ];
+            // item.modelTransformations = [
+            //     {
+            //         getName: () => 'sweethome3d_hinge_1',
+            //         getMatrix: () => [
+            //             // [
+            //             //     0.8848459,
+            //             //     0,
+            //             //     -0.46559626,
+            //             //     -0.034006376
+            //             // ],
+            //             // [
+            //             //     0,
+            //             //     1,
+            //             //     0,
+            //             //     0
+            //             // ],
+            //             // [
+            //             //     0.4661716,
+            //             //     0,
+            //             //     0.8848459,
+            //             //     0.19492601
+            //             // ]
+            //             [
+            //                 0.8848459,
+            //                 0,
+            //                 -0.46559626,
+            //                 -0.034006376,
+            //             ],
+            //             [
+            //                 0,
+            //                 1,
+            //                 0,
+            //                 0,
+            //             ],
+            //             [
+            //                 0.4661716,
+            //                 0,
+            //                 0.8848459,
+            //                 0.19492601,
+            //             ],
+            //         ],
+            //     },
+            //     // transformation,
+            // ];
         }
         component3D.updateObjects([item]);
 
         if (selectItemRef() !== null) {
             const items = JSON.parse(JSON.stringify(settingsRef().items));
             // items[selectItemRef()].id = item.id;
-            items[selectItemRef()].id = _hpc.getHome().getHomeObjects().findIndex(_item => _item.id === item.id);
+            items[selectItemRef()].id = item.name;
             setSettings({ ...settings, items });
             setSelectItem(null);
         }

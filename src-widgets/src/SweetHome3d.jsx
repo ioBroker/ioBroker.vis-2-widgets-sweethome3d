@@ -19,6 +19,7 @@ import triangulator from './lib/triangulator.min.txt';
 import viewModel from './lib/viewmodel.min.txt';
 import viewHome from './lib/viewhome.min.txt';
 import SweetHome3dDialog from './Component/SweetHome3dDialog';
+// import transformations from './Component/transformations';
 
 function loadScript(url, onload) {
     return new Promise((resolve, reject) => {
@@ -167,7 +168,7 @@ class SweetHome3d extends Generic {
             this.state.rxData.settings.items.forEach(item => {
                 if (item.oid1 === id) {
                     const homeItems = this.state.hpc.getHome().getHomeObjects();
-                    const homeItem = homeItems[item.id];
+                    const homeItem = homeItems.find(_item => _item.name === item.id);
                     if (homeItem) {
                         if (item.oid1type === 'show') {
                             homeItem.visible = !!state.val;
@@ -182,8 +183,16 @@ class SweetHome3d extends Generic {
                         }
                         if (item.oid1type === 'open') {
                             if (state.val) {
+                                // const transformation = transformations.find(_transformation => _transformation.catalogId === homeItem.catalogId);
+                                // if (transformation) {
+                                //     homeItem.modelTransformations = {
+                                //         getName: () => transformation.modelTransformations.name,
+                                //         getMatrix: () => transformation.modelTransformations.matrix,
+                                //     };
+                                // }
                                 homeItem.angle = homeItem.originalAngle + (item.angle || 45) * (Math.PI / 180);
                             } else {
+                                // homeItem.modelTransformations = [];
                                 homeItem.angle = homeItem.originalAngle;
                             }
                             const component3D = this.state.hpc.getComponent3D();
@@ -272,7 +281,7 @@ class SweetHome3d extends Generic {
         </Dialog>;
     }
 
-    onItemClick = (item, component3D, hpc) => {
+    onItemClick = item => {
         // const color = item.object3D.userData.color;
         // item.object3D.userData.color = rgb2color(0, 255, 0);
         // component3D.updateObjects([item]);
@@ -287,8 +296,7 @@ class SweetHome3d extends Generic {
         //     }
         // }
 
-        const index = hpc.getHome().getHomeObjects().findIndex(_item => _item.id === item.id);
-        this.state.rxData.settings.items.filter(_item => _item.id === index).forEach(_item => {
+        this.state.rxData.settings.items.filter(_item => _item.id === item.name).forEach(_item => {
             if (_item.oid2) {
                 if (_item.oid2type === 'state') {
                     this.props.context.socket.getState(_item.oid2).then(state => {

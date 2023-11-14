@@ -76,20 +76,18 @@ const View3d = props => {
                     // });
                     const viewerCanvas = canvasRef.current;
                     const items = HPC.getHome().getHomeObjects();
+                    // const transformations = [];
                     items.forEach(item => {
                         item.originalColor = item.object3D?.userData?.color;
                         item.originalAngle = item.angle;
-                        if (item.sashes?.length) {
-                            item.setSashes([new window.Sash(1, 2, 3, 4, 5)]);
-                            // item.object3D.update();
-                            // item.object3D.updateModelTransformations(item.object3D);
-                            item.object3D.updatePieceOfFurnitureModelTransformations();
-                            item.object3D.updatePieceOfFurnitureTransform();
-                            HPC.getComponent3D().revalidate();
-                            const component3D = HPC.getComponent3D();
-                            component3D.updateObjects([item]);
-                        }
+                        // if (item.doorOrWindow && item.modelTransformations) {
+                        //     transformations.push({
+                        //         catalogId: item.catalogId,
+                        //         modelTransformations: item.modelTransformations,
+                        //     });
+                        // }
                     });
+                    // console.log(JSON.stringify(transformations, null, 2));
                     const component3D = HPC.getComponent3D();
                     viewerCanvas && viewerCanvas.addEventListener('click', e => {
                         const x = e.clientX - canvasRef.current.getBoundingClientRect().left;
