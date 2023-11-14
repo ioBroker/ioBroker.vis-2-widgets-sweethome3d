@@ -1,7 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
 import { useEffect, useRef, useState } from 'react';
 import {
-    MenuItem, Select, ToggleButton, ToggleButtonGroup,
+    Button,
+    MenuItem, TextField, ToggleButton, ToggleButtonGroup,
 } from '@mui/material';
 
 import { withStyles } from '@mui/styles';
@@ -20,6 +21,7 @@ const styles = {
     toolbar: {
         display: 'flex',
         gap: 8,
+        alignItems: 'center',
     },
     container: {
         display: 'grid', gridTemplateRows: 'auto min-content', overflow: 'auto',
@@ -36,6 +38,8 @@ const View3d = props => {
     const [view, setView] = useState('virtualVisit');
     const [levels, setLevels] = useState([]);
     const [selectedLevel, setSelectedLevel] = useState(0);
+    const [cameras, setCameras] = useState([]);
+    const [selectedCamera, setSelectedCamera] = useState(0);
 
     useEffect(() => {
         let HPC;
@@ -67,6 +71,13 @@ const View3d = props => {
                         }
                     });
                     setLevels(_levels.reverse());
+
+                    const _cameras = [];
+                    HPC.getHome().getStoredCameras().forEach((camera, index) => {
+                        _cameras.push({ name: camera.getName(), id: index, camera });
+                    });
+                    setCameras(_cameras);
+
                     setProgressVisible(false);
 
                     // const HOME = HPC.getHome();
@@ -179,8 +190,10 @@ const View3d = props => {
                         {Generic.t('Aerial view')}
                     </ToggleButton>
                 </ToggleButtonGroup>
-                <Select
+                <TextField
+                    select
                     variant="standard"
+                    label={Generic.t('Level')}
                     value={selectedLevel}
                     onChange={e => {
                         hpc.startRotationAnimationAfterLoading = false;
@@ -189,7 +202,36 @@ const View3d = props => {
                     }}
                 >
                     {levels.map(level => <MenuItem key={level.id} value={level.id}>{level.name}</MenuItem>)}
-                </Select>
+                </TextField>
+                <TextField
+                    select
+                    label={Generic.t('Camera')}
+                    variant="standard"
+                    value={selectedCamera}
+                    onChange={e => {
+                        setSelectedCamera(e.target.value);
+                    }}
+                >
+                    {cameras.map((camera, index) => <MenuItem key={index} value={camera.id}>{camera.name}</MenuItem>)}
+                </TextField>
+                <Button
+                    color="grey"
+                    onClick={() => {
+                        hpc.startRotationAnimationAfterLoading = false;
+                        const camera = cameras[selectedCamera];
+                        hpc.getController().goToCamera(camera.camera);
+                        const _levels = [...levels].reverse();
+                        for (const i in _levels) {
+                            if (_levels[i].level.getElevation() < camera.camera.getZ()
+                        && (_levels[parseInt(i) + 1] ? _levels[parseInt(i) + 1].level.getElevation() > camera.camera.getZ() : true)) {
+                                setSelectedLevel(_levels[i].level.id);
+                                break;
+                            }
+                        }
+                    }}
+                >
+                    {Generic.t('Go to camera')}
+                </Button>
             </div>
         </div>
     </div>;
