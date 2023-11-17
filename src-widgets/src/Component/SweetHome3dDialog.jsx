@@ -1,10 +1,21 @@
-import {
-    Button, Dialog, DialogActions, DialogContent, IconButton, MenuItem, Select, TextField, Tooltip,
-} from '@mui/material';
-import { Add, Delete } from '@mui/icons-material';
 import { useEffect, useRef, useState } from 'react';
 import { withStyles } from '@mui/styles';
+
+import {
+    Button, Dialog, DialogActions,
+    DialogContent, IconButton, MenuItem,
+    Select, TextField, Tooltip,
+} from '@mui/material';
+
+import {
+    Add,
+    Check,
+    Close, Colorize,
+    Delete, Visibility,
+} from '@mui/icons-material';
+
 import { SelectID, ColorPicker, SelectFile } from '@iobroker/adapter-react-v5';
+
 import View3d, { rgb2color } from './View3d';
 import Generic from '../Generic';
 
@@ -15,48 +26,103 @@ const useStateRef = initialValue => {
     return [value, setValue, () => ref.current];
 };
 
-const styles = {
+const styles = theme => ({
     field: {
         display: 'flex',
         gap: 8,
         alignItems: 'end',
+        width: '100%',
     },
     header: {
-        paddingTop: 16,
+        marginTop: 10,
+        padding: 5,
         fontWeight: 'bold',
+        backgroundColor: theme.palette.primary.main,
+        color: theme.palette.primary.contrastText,
     },
     fields: {
         display: 'flex',
         flexDirection: 'column',
         gap: 8,
     },
-    dialog: {
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        width: '100%',
-        height: '100%',
-        gap: 20,
+    dialogContent: {
+        width: 'calc(100% - 48px)',
+        height: 'calc(100% - 40px)',
     },
     columnViewer: {
-        display: 'grid',
-        gridTemplateRows: 'min-content auto',
-        overflow: 'auto',
-        gap: 8,
-    },
-    columnRight: { overflow: 'auto' },
-    columns: {
-        width: '100%',
+        verticalAlign: 'top',
         height: '100%',
-        display: 'grid',
-        gridTemplateColumns: 'min-content auto',
-        gap: 20,
+        width: 'calc(100% - 490px)',
+        overflow: 'auto',
+        marginRight: 10,
+        display: 'inline-block',
     },
-    columnsContainer: { overflow: 'auto' },
+    projectInput: {
+        minWidth: 500,
+    },
+    columnsContainer: {
+        verticalAlign: 'top',
+        display: 'inline-block',
+        width: 470,
+        height: 'calc(100% - 10px)',
+        overflow: 'hidden',
+        backgroundColor: theme.palette.mode === 'dark' ? '#333' : '#ccc',
+        borderRadius: 5,
+        padding: 5,
+    },
+    columnsList: {
+        width: 150,
+        overflow: 'auto',
+        display: 'inline-block',
+        height: 'calc(100%- 22px)',
+        marginRight: 8,
+        verticalAlign: 'top',
+    },
+    columnRight: {
+        verticalAlign: 'top',
+        width: 'calc(100% - 158px)',
+        overflow: 'auto',
+        display: 'inline-block',
+        height: 'calc(100%- 22px)',
+    },
+    columns: {
+        width: 'calc(100% - 10px)',
+        height: 'calc(100% - 10px)',
+    },
+    dialogPaper: {
+        minHeight: 'calc(100% - 48px)',
+        maxHeight: 'calc(100% - 48px)',
+        height: 'calc(100% - 48px)',
+    },
     widget:{
-        display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'start',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 4,
+        alignItems: 'start',
     },
-    widgetSubname: { fontSize: '80%', fontStyle: 'italic' },
-};
+    idButton: {
+        minWidth: 40,
+    },
+    widgetSubname: {
+        fontSize: '80%',
+        fontStyle: 'italic',
+    },
+});
+
+function highLightObject(hpc, item) {
+    const homeItems = hpc.getHome().getHomeObjects();
+    const homeItem = homeItems.find(_item => _item.name === item.id);
+    if (homeItem) {
+        const color = homeItem.object3D.userData.color;
+        homeItem.object3D.userData.color = rgb2color(0, 200, 0);
+        const component3D = hpc.getComponent3D();
+        component3D.updateObjects([homeItem]);
+        setTimeout(() => {
+            homeItem.object3D.userData.color = color;
+            component3D.updateObjects([homeItem]);
+        }, 300);
+    }
+}
 
 const SweetHome3dDialogItem = props => {
     const {
@@ -102,7 +168,7 @@ const SweetHome3dDialogItem = props => {
                     }}
                     disabled={select && selectItem !== i}
                 />
-                <Button
+                <IconButton
                     variant="contained"
                     onClick={() => {
                         if (selectItem === i) {
@@ -114,36 +180,22 @@ const SweetHome3dDialogItem = props => {
                     color="grey"
                     disabled={select && selectItem !== i}
                 >
-                    {Generic.t('Select')}
-                </Button>
-                <Button
+                    <Colorize />
+                </IconButton>
+                <IconButton
                     variant="contained"
-                    onClick={() => {
-                        const homeItems = hpc.getHome().getHomeObjects();
-                        const homeItem = homeItems.find(_item => _item.name === item.id);
-                        if (homeItem) {
-                            const color = homeItem.object3D.userData.color;
-                            homeItem.object3D.userData.color = rgb2color(0, 255, 0);
-                            const component3D = hpc.getComponent3D();
-                            component3D.updateObjects([homeItem]);
-                            setTimeout(() => {
-                                homeItem.object3D.userData.color = color;
-                                component3D.updateObjects([homeItem]);
-                            }, 300);
-                        }
-                    }}
+                    onClick={() => highLightObject(hpc, item)}
                     color="grey"
-                    disabled={select}
+                    disabled={select || !item.id}
                 >
-                    {Generic.t('Highlight')}
-                </Button>
+                    <Visibility />
+                </IconButton>
             </div>
-            <div className={props.classes.header}>
-                {Generic.t('On change')}
-            </div>
-            <div className={props.classes.field}>
+            <div className={props.classes.header}>{Generic.t('On change')}</div>
+            <div style={{ width: '100%' }}>
                 <Select
                     variant="standard"
+                    fullWidth
                     value={item.oid1type}
                     onChange={e => {
                         const items = JSON.parse(JSON.stringify(settings.items));
@@ -153,10 +205,13 @@ const SweetHome3dDialogItem = props => {
                     disabled={select}
                 >
                     {['show', 'color', 'open'].map(type => <MenuItem key={type} value={type}>
-                        {Generic.t(type)}
+                        {Generic.t(`type_${type}`)}
                     </MenuItem>)}
                 </Select>
+            </div>
+            <div className={props.classes.field}>
                 {item.oid1type === 'color' && <ColorPicker
+                    style={{ width: '100%' }}
                     value={item.color || ''}
                     onChange={color => {
                         const items = JSON.parse(JSON.stringify(settings.items));
@@ -175,8 +230,11 @@ const SweetHome3dDialogItem = props => {
                     }}
                     disabled={select}
                 />}
+            </div>
+            <div className={props.classes.field}>
                 <TextField
                     variant="standard"
+                    style={{ width: 'calc(100% - 50px)' }}
                     label={Generic.t('Object id')}
                     value={item.oid1}
                     onChange={e => {
@@ -187,6 +245,7 @@ const SweetHome3dDialogItem = props => {
                     disabled={select}
                 />
                 <Button
+                    className={props.classes.idButton}
                     onClick={() => {
                         const _dialogs = JSON.parse(JSON.stringify(dialogs));
                         _dialogs[`${i}-1`] = true;
@@ -195,7 +254,7 @@ const SweetHome3dDialogItem = props => {
                     color="grey"
                     disabled={select}
                 >
-...
+                    ...
                 </Button>
                 {dialogs[`${i}-1`] && <SelectID
                     selected={item.oid1}
@@ -212,12 +271,11 @@ const SweetHome3dDialogItem = props => {
                     socket={props.socket}
                 />}
             </div>
-            <div className={props.classes.header}>
-                {Generic.t('Action')}
-            </div>
+            <div className={props.classes.header}>{Generic.t('Action')}</div>
             <div className={props.classes.field}>
                 <Select
                     variant="standard"
+                    style={{ width: '100%' }}
                     value={item.oid2type}
                     onChange={e => {
                         const items = JSON.parse(JSON.stringify(settings.items));
@@ -227,12 +285,15 @@ const SweetHome3dDialogItem = props => {
                     disabled={select}
                 >
                     {['state', 'widget'].map(type => <MenuItem key={type} value={type}>
-                        {Generic.t(type)}
+                        {Generic.t(`type_${type}`)}
                     </MenuItem>)}
                 </Select>
+            </div>
+            <div className={props.classes.field}>
                 {item.oid2type === 'state' && <TextField
                     variant="standard"
                     label={Generic.t('Object id')}
+                    style={{ width: 'calc(100% - 50px)' }}
                     value={item.oid2}
                     onChange={e => {
                         const items = JSON.parse(JSON.stringify(settings.items));
@@ -241,8 +302,21 @@ const SweetHome3dDialogItem = props => {
                     }}
                     disabled={select}
                 />}
+                {item.oid2type === 'state' && <Button
+                    className={props.classes.idButton}
+                    onClick={() => {
+                        const _dialogs = JSON.parse(JSON.stringify(dialogs));
+                        _dialogs[`${i}-2`] = true;
+                        setDialogs(_dialogs);
+                    }}
+                    color="grey"
+                    disabled={select}
+                >
+                    ...
+                </Button>}
                 {item.oid2type === 'widget' && <Select
                     variant="standard"
+                    style={{ width: '100%' }}
                     value={item.widget}
                     onChange={e => {
                         const items = JSON.parse(JSON.stringify(settings.items));
@@ -262,17 +336,6 @@ const SweetHome3dDialogItem = props => {
                         </MenuItem>;
                     })}
                 </Select>}
-                <Button
-                    onClick={() => {
-                        const _dialogs = JSON.parse(JSON.stringify(dialogs));
-                        _dialogs[`${i}-2`] = true;
-                        setDialogs(_dialogs);
-                    }}
-                    color="grey"
-                    disabled={select}
-                >
-...
-                </Button>
                 {dialogs[`${i}-2`] && <SelectID
                     selected={item.oid2}
                     onOk={selected => {
@@ -314,9 +377,9 @@ const SweetHome3dDialog = props => {
     const disabled = JSON.stringify(settings) === JSON.stringify(props.settings);
     const select = selectItem !== null;
 
-    const onItemClick = (item, component3D, _hpc) => {
+    const onItemClick = (item, component3D /* , _hpc */) => {
         const color = item.object3D.userData.color;
-        item.object3D.userData.color = rgb2color(0, 255, 0);
+        item.object3D.userData.color = rgb2color(0, 0, 200);
 
         if (item.doorOrWindow) {
             // const transformation = window.java.awt.geom.AffineTransform.getTranslateInstance(item.getX(), item.getY());
@@ -373,6 +436,10 @@ const SweetHome3dDialog = props => {
             const items = JSON.parse(JSON.stringify(settingsRef().items));
             // items[selectItemRef()].id = item.id;
             items[selectItemRef()].id = item.name;
+            if (items[selectItemRef()].name === Generic.t('Item')) {
+                items[selectItemRef()].name = item.name;
+            }
+
             setSettings({ ...settings, items });
             setSelectItem(null);
         }
@@ -392,99 +459,112 @@ const SweetHome3dDialog = props => {
             component3D.updateObjects([item]);
         }, 300);
     };
-    return <Dialog open={props.open} onClose={props.onClose} fullScreen>
-        <DialogContent>
-            <div
-                className={props.classes.dialog}
-            >
-                <div className={props.classes.columnViewer}>
-                    <div className={props.classes.field}>
-                        {fileDialog && <SelectFile
-                            title={Generic.t('Select file')}
-                            onClose={() => setFileDialog(false)}
-                            showToolbar
-                            imagePrefix="../"
-                            selected={settings.file || ''}
-                            filterFiles={['sh3d']}
-                            onOk={selected => {
-                                setSettings({ ...settings, file: selected });
-                            }}
-                            socket={props.socket}
-                        />}
-                        <TextField variant="standard" value={settings.file || ''} />
-                        <Button
-                            variant="contained"
-                            onClick={() => setFileDialog(true)}
-                            color="grey"
-                        >
-                                ...
-                        </Button>
-                    </div>
-                    <View3d
-                        homeUrl={settings.file}
+
+    return <Dialog
+        open={!0}
+        classes={{ paper: props.classes.dialogPaper }}
+        onClose={props.onClose}
+        fullWidth
+        maxWidth="xl"
+    >
+        <DialogContent className={props.classes.dialogContent}>
+            <div className={props.classes.columnViewer}>
+                <div className={props.classes.field}>
+                    {fileDialog && <SelectFile
+                        title={Generic.t('Select file')}
+                        onClose={() => setFileDialog(false)}
+                        showToolbar
+                        imagePrefix="../"
+                        restrictToFolder={`${props.moreProps.context.adapterName}.${props.moreProps.context.instance}/${props.moreProps.context.projectName}`}
+                        allowNonRestricted
+                        allowUpload
+                        allowDownload
+                        allowCreateFolder
+                        allowDelete
+                        allowView
+                        selected={settings.file || ''}
+                        filterFiles={['sh3d']}
+                        onOk={selected => setSettings({ ...settings, file: selected })}
+                        socket={props.socket}
+                    />}
+                    <TextField
+                        className={props.classes.projectInput}
+                        variant="standard"
+                        value={settings.file || ''}
+                        label={!settings.file ? Generic.t('Please upload or select SweetHome 3D Project') : Generic.t('SweetHome3D File')}
+                    />
+                    <Button
+                        variant="contained"
+                        onClick={() => setFileDialog(true)}
+                        color="grey"
+                    >
+                        ...
+                    </Button>
+                </div>
+                <div style={{ width: '100%', height: 'calc(100% - 48px)', cursor: select ? 'crosshair' : undefined }}>
+                    {settings.file ? <View3d
+                        settings={settings}
+                        showVirtualAerialSwitch
+                        showLevelSelector
+                        showCameraSelector
+                        showResetCameraButton
                         onClick={onItemClick}
                         HpcCallback={_hpc => setHpc(_hpc)}
-                    />
+                        onSettingsChange={newSettings => setSettings({ ...settings, ...newSettings })}
+                    /> : null}
                 </div>
-                <div className={props.classes.columnsContainer}>
-                    <div className={props.classes.columns}>
-                        <div className={props.classes.columnRight}>
-                            <Tooltip title={Generic.t('Add item')}>
-                                <IconButton onClick={() => {
-                                    const items = JSON.parse(JSON.stringify(settings.items));
-                                    items.push({
-                                        name: 'Item',
-                                        id: '',
-                                        oid1: '',
-                                        oid1type: 'show',
-                                        oid2: '',
-                                        oid2type: 'state',
-                                        color: '#00ff00',
-                                        angle: 45,
-                                    });
-                                    setSettings({ ...settings, items });
-                                }}
-                                >
-                                    <Add />
-                                </IconButton>
-                            </Tooltip>
-                            {
-                                settings.items.map((item, i) => <MenuItem
-                                    key={i}
-                                    onClick={() => setCurrentItem(i)}
-                                    selected={currentItem === i}
-                                >
-                                    {item.name || item.id}
-                                </MenuItem>)
-                            }
-                        </div>
-                        <div className={props.classes.columnRight}>
-                            {settings.items[currentItem] && <SweetHome3dDialogItem
-                                {...props}
-                                i={currentItem}
-                                item={settings.items[currentItem]}
-                                settings={settings}
-                                setSettings={setSettings}
-                                selectItem={selectItem}
-                                setSelectItem={setSelectItem}
-                                dialogs={dialogs}
-                                setDialogs={setDialogs}
-                                select={select}
-                                hpc={hpc}
-                            />}
-                        </div>
-                    </div>
+            </div>
+            <div className={props.classes.columnsContainer}>
+                <div style={{ width: '100%', fontWeight: 'bold', fontSize: 16 }}>{Generic.t('3D Objects')}</div>
+                <div className={props.classes.columnsList}>
+                    {settings.file ? <Tooltip title={Generic.t('Add item')}>
+                        <IconButton onClick={() => {
+                            const items = JSON.parse(JSON.stringify(settings.items));
+                            items.push({
+                                name: Generic.t('Item'),
+                                id: '',
+                                oid1: '',
+                                oid1type: 'show',
+                                oid2: '',
+                                oid2type: 'state',
+                                color: '#00ff00',
+                                angle: 45,
+                            });
+                            setSettings({ ...settings, items });
+                        }}
+                        >
+                            <Add />
+                        </IconButton>
+                    </Tooltip> : null}
+                    {settings.items.map((item, i) => <MenuItem
+                        key={i}
+                        onClick={() => {
+                            setCurrentItem(i);
+                            settings.items[i].id && highLightObject(hpc, settings.items[i]);
+                        }}
+                        selected={currentItem === i}
+                    >
+                        {item.name || item.id}
+                    </MenuItem>)}
+                </div>
+                <div className={props.classes.columnRight}>
+                    {settings.items[currentItem] && <SweetHome3dDialogItem
+                        {...props}
+                        i={currentItem}
+                        item={settings.items[currentItem]}
+                        settings={settings}
+                        setSettings={setSettings}
+                        selectItem={selectItem}
+                        setSelectItem={setSelectItem}
+                        dialogs={dialogs}
+                        setDialogs={setDialogs}
+                        select={select}
+                        hpc={hpc}
+                    />}
                 </div>
             </div>
         </DialogContent>
         <DialogActions>
-            <Button
-                variant="contained"
-                onClick={props.onClose}
-                color="grey"
-            >
-                {Generic.t('Close')}
-            </Button>
             <Button
                 variant="contained"
                 onClick={() => {
@@ -492,8 +572,17 @@ const SweetHome3dDialog = props => {
                     props.onClose();
                 }}
                 disabled={disabled}
+                startIcon={<Check />}
             >
                 {Generic.t('Save')}
+            </Button>
+            <Button
+                variant="contained"
+                onClick={props.onClose}
+                color="grey"
+                startIcon={<Close />}
+            >
+                {Generic.t('Close')}
             </Button>
         </DialogActions>
     </Dialog>;

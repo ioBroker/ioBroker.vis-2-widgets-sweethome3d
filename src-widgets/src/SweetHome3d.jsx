@@ -1,9 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
-
-import { Button, Dialog, DialogContent } from '@mui/material';
 import Color from 'color';
+
+import { Button } from '@mui/material';
+
 import Generic from './Generic';
 import View3d, { rgb2color } from './Component/View3d';
 
@@ -21,29 +22,11 @@ import viewHome from './lib/viewhome.min.txt';
 import SweetHome3dDialog from './Component/SweetHome3dDialog';
 // import transformations from './Component/transformations';
 
-function loadScript(url, onload) {
-    return new Promise((resolve, reject) => {
-        const script = document.createElement('script');
-        script.onload = () => {
-            onload();
-            resolve();
-        };
-        script.onerror = reject;
-        script.src = url;
-        script.type = 'text/javascript';
-
-        document.getElementsByTagName('HEAD')[0].appendChild(script);
-    });
-}
-
 const CustomSettings = props => {
     const [open, setOpen] = React.useState(false);
 
-    console.log(props.props);
-
     return <>
-        <SweetHome3dDialog
-            open={open}
+        {open ? <SweetHome3dDialog
             onClose={() => {
                 setOpen(false);
                 window.hpcShowViewer && window.hpcShowViewer();
@@ -54,7 +37,7 @@ const CustomSettings = props => {
             }}
             socket={props.context.socket}
             moreProps={props.props}
-        />
+        /> : null}
         <Button
             variant="contained"
             onClick={() => {
@@ -79,10 +62,12 @@ const styles = () => ({
 class SweetHome3d extends Generic {
     divRef = React.createRef();
 
+    static scriptsLoaded = null;
+
     constructor(props) {
         super(props);
         this.state.showDialog = false;
-        this.state.scriptsLoaded = [
+        SweetHome3d.scriptsLoaded = SweetHome3d.scriptsLoaded || [
             { file: big, loaded: false },
             { file: glMatrix, loaded: false },
             { file: jsZip, loaded: false },
@@ -95,9 +80,31 @@ class SweetHome3d extends Generic {
             { file: viewModel, loaded: false },
             { file: viewHome, loaded: false },
         ];
+
         this.state.subscriptions = [];
         this.state.viewLoaded = false;
-        this.state.widgetDialog = null;
+        this.state.allScriptsLoaded = !SweetHome3d.scriptsLoaded.find(script => !script.loaded);
+        // this.state.widgetDialog = null;
+    }
+
+    async loadScript(url) {
+        return new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.onload = () => {
+                const scriptLoaded = SweetHome3d.scriptsLoaded.find(_script => _script.file === url);
+                scriptLoaded.loaded = true;
+                resolve();
+                const allScriptsLoaded = !SweetHome3d.scriptsLoaded.find(_script => !_script.loaded);
+                if (allScriptsLoaded) {
+                    this.setState({ allScriptsLoaded });
+                }
+            };
+            script.onerror = reject;
+            script.src = url;
+            script.type = 'text/javascript';
+
+            document.getElementsByTagName('HEAD')[0].appendChild(script);
+        });
     }
 
     static getWidgetInfo() {
@@ -139,13 +146,39 @@ class SweetHome3d extends Generic {
                             />,
                             type: 'custom',
                         },
+                        {
+                            name: 'showVirtualAerialSwitch',
+                            label: 'show_virtual_aerial_switch',
+                            type: 'checkbox',
+                            default: true,
+                        },
+                        {
+                            name: 'showLevelSelector',
+                            label: 'show_level_selector',
+                            type: 'checkbox',
+                            default: true,
+                        },
+                        {
+                            name: 'showCameraSelector',
+                            label: 'show_camera_selector',
+                            type: 'checkbox',
+                            default: true,
+                        },
+                        {
+                            name: 'showResetCameraButton',
+                            label: 'show_reset_camera_button',
+                            type: 'checkbox',
+                            hidden: '!!data.showCameraSelector',
+                            default: true,
+                        },
                     ],
                 },
             ],
             visDefaultStyle: {
                 width: '100%',
-                height: 120,
-                position: 'relative',
+                height: '100%',
+                top: 0,
+                left: 0,
             },
             visPrev: 'widgets/vis-2-widgets-material/img/prev_actual.png',
         };
@@ -174,14 +207,12 @@ class SweetHome3d extends Generic {
                             homeItem.visible = !!state.val;
                             const component3D = this.state.hpc.getComponent3D();
                             component3D.updateObjects([homeItem]);
-                        }
-                        if (item.oid1type === 'color') {
+                        } else if (item.oid1type === 'color') {
                             const color = Color(item.color);
                             homeItem.object3D.userData.color = state.val ? rgb2color(color.red(), color.green(), color.blue()) : homeItem.originalColor;
                             const component3D = this.state.hpc.getComponent3D();
                             component3D.updateObjects([homeItem]);
-                        }
-                        if (item.oid1type === 'open') {
+                        } else if (item.oid1type === 'open') {
                             if (state.val) {
                                 // const transformation = transformations.find(_transformation => _transformation.catalogId === homeItem.catalogId);
                                 // if (transformation) {
@@ -215,9 +246,8 @@ class SweetHome3d extends Generic {
                     const oid = item[`oid${i}`];
                     if (oid && !this.state.subscriptions.includes(oid)) {
                         this.props.context.socket.subscribeState(oid, this.onState);
-                        this.props.context.socket.getState(oid).then(state => {
-                            this.onState(oid, state);
-                        });
+                        this.props.context.socket.getState(oid)
+                            .then(state => this.onState(oid, state));
                         this.setState(state => {
                             state.subscriptions.push(oid);
                             return state;
@@ -231,17 +261,13 @@ class SweetHome3d extends Generic {
         window.hpcHideViewer = this.hideViewer;
         window.hpcShowViewer = this.showViewer;
         super.componentDidMount();
-        for (const i in this.state.scriptsLoaded) {
-            const script = this.state.scriptsLoaded[i];
+        for (const i in SweetHome3d.scriptsLoaded) {
+            const script = SweetHome3d.scriptsLoaded[i];
             if (!script.loaded) {
-                await loadScript(script.file, () => {
-                    this.setState(state => {
-                        state.scriptsLoaded[i].loaded = true;
-                        return state;
-                    });
-                });
+                await this.loadScript(script.file);
             }
         }
+
         await this.propertiesUpdate();
     }
 
@@ -273,13 +299,13 @@ class SweetHome3d extends Generic {
         />;
     }
 
-    renderWidgetDialog() {
-        return <Dialog open={!!this.state.widgetDialog} onClose={() => this.setState({ widgetDialog: null })}>
-            <DialogContent>
-                {this.state.widgetDialog && this.getWidgetInWidget(this.props.view, this.state.widgetDialog)}
-            </DialogContent>
-        </Dialog>;
-    }
+    // renderWidgetDialog() {
+    //     return <Dialog open={!!this.state.widgetDialog} onClose={() => this.setState({ widgetDialog: null })}>
+    //         <DialogContent>
+    //             {this.state.widgetDialog && this.getWidgetInWidget(this.props.view, this.state.widgetDialog)}
+    //         </DialogContent>
+    //     </Dialog>;
+    // }
 
     onItemClick = item => {
         // const color = item.object3D.userData.color;
@@ -299,11 +325,9 @@ class SweetHome3d extends Generic {
         this.state.rxData.settings.items.filter(_item => _item.id === item.name).forEach(_item => {
             if (_item.oid2) {
                 if (_item.oid2type === 'state') {
-                    this.props.context.socket.getState(_item.oid2).then(state => {
-                        this.props.context.socket.setState(_item.oid2, !state.val);
-                    });
-                }
-                if (_item.oid2type === 'widget') {
+                    this.props.context.socket.getState(_item.oid2).then(state =>
+                        this.props.context.socket.setState(_item.oid2, !state.val));
+                } else if (_item.oid2type === 'widget') {
                     // this.setState({ widgetDialog: _item.widget });
                     const refWidget = this.props.askView && this.props.askView('getRef', { id: _item.widget });
                     refWidget?.onCommand('openDialog');
@@ -319,14 +343,16 @@ class SweetHome3d extends Generic {
 
     renderWidgetBody(props) {
         super.renderWidgetBody(props);
-
-        const widgetCount = this.props.context.views &&
-        this.props.view &&
-        Object.values(this.props.context.views[this.props.view].widgets).filter(widget => widget.tpl === 'tplMaterial2SweetHome3d').length;
-
-        if (!this.state.scriptsLoaded.every(script => script.loaded)) {
+        if (!this.state.allScriptsLoaded) {
             return null;
         }
+
+        const widgets = this.props.context.views && this.props.view && this.props.context.views[this.props.view].widgets;
+
+        const tree3widgets = this.props.context.views && this.props.view && widgets ?
+            Object.keys(widgets)
+                .filter(widgetId => widgets[widgetId].tpl === 'tplMaterial2SweetHome3d')
+            : [];
 
         if (this.divRef.current && (this.divRef.current.offsetWidth !== this.oldWidth || this.divRef.current.offsetHeight !== this.oldHeight)) {
             if (this.state.hpc && this.state.hpc.getComponent3D()) {
@@ -340,27 +366,25 @@ class SweetHome3d extends Generic {
             ref={this.divRef}
             className={this.props.classes.content}
         >
-            {this.state.showDialog || this.state.hideViewer || widgetCount > 1 ? null : <View3d
-                homeUrl={this.state.rxData.settings.file}
+            {this.state.showDialog || this.state.hideViewer || tree3widgets[0] !== this.props.id ? null : <View3d
+                settings={this.state.rxData.settings}
                 onClick={this.onItemClick}
-                HpcCallback={_hpc => {
-                    this.setState({ hpc: _hpc });
-                }}
+                HpcCallback={hpc => this.setState({ hpc })}
                 onLoad={() => {
                     this.state.subscriptions.forEach(oid => {
-                        this.props.context.socket.getState(oid).then(state => {
-                            this.onState(oid, state);
-                        });
-                        this.setState({
-                            viewLoaded: true,
-                        });
+                        this.props.context.socket.getState(oid).then(state => this.onState(oid, state));
+                        this.setState({ viewLoaded: true });
                     });
                 }}
+                showVirtualAerialSwitch={this.state.rxData.showVirtualAerialSwitch}
+                showLevelSelector={this.state.rxData.showLevelSelector}
+                showCameraSelector={this.state.rxData.showCameraSelector}
+                showResetCameraButton={this.state.rxData.showResetCameraButton}
             />}
-            {widgetCount > 1 && <div style={{ textAlign: 'center' }}>
+            {tree3widgets.length > 1 && tree3widgets[0] !== this.props.id && <div style={{ textAlign: 'center' }}>
                 {Generic.t('Only one widget per view is supported')}
             </div>}
-            {this.renderWidgetDialog()}
+            {/* this.renderWidgetDialog() */}
             {this.props.fake && <>
                 {this.renderDialog()}
                 <Button
@@ -370,14 +394,12 @@ class SweetHome3d extends Generic {
                         viewLoaded: false,
                     })}
                 >
-Open dialog
+                    Open dialog
                 </Button>
             </>}
         </div>;
 
-        return this.wrapContent(
-            content,
-        );
+        return this.wrapContent(content);
     }
 }
 

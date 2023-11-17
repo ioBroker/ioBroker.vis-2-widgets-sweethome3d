@@ -8,14 +8,21 @@ const gulp = require('gulp');
 const adapterName = require('./package.json').name.replace('iobroker.', '');
 const gulpHelper = require('@iobroker/vis-2-widgets-react-dev/gulpHelper');
 const decompress= require('decompress');
-const fs = require('fs');
+const fs = require('node:fs');
 
 gulp.task('update-viewer-source', async () => {
     await decompress(`${__dirname}/viewerSources/SweetHome3DJSViewer-7.2.zip`, `${__dirname}/viewerSources/src`);
     const files = fs.readdirSync(`${__dirname}/viewerSources/src/lib`);
     // copy all files
     for (const file of files) {
-        fs.writeFileSync(`src-widgets/src/lib/${file.replace(/\.js$/, '.txt')}`, fs.readFileSync(`${__dirname}/viewerSources/src/lib/${file}`));
+        let data = fs.readFileSync(`${__dirname}/viewerSources/src/lib/${file}`);
+        if (file === 'viewhome.min.js') {
+            data = data.toString().replace(`"'+ZIPTools.getScriptFolder("gl-matrix-min.js")+'navigationPanel.png"`, '"./widgets/vis-2-widgets-sweethome3d/navigationPanel.png"');
+            data = data.toString().replace(`ZIPTools.getScriptFolder()+"close.png"`, '"./widgets/vis-2-widgets-sweethome3d/close.png"');
+            data = data.toString().replace(`ZIPTools.getScriptFolder()+"close.png"`, '"./widgets/vis-2-widgets-sweethome3d/close.png"');
+        }
+
+        fs.writeFileSync(`src-widgets/src/lib/${file.replace(/\.js$/, '.txt')}`, data);
     }
 });
 
@@ -29,4 +36,10 @@ gulpHelper.gulpTasks(gulp, adapterName, __dirname, `${__dirname}/src-widgets/`, 
     `${__dirname}/src-widgets/build/static/js/*node_modules_babel_runtime_helpers_createForOfItera*.*`,
 ]);
 
-gulp.task('default', gulp.series('widget-build'));
+gulp.task('copyPng', done => {
+   fs.writeFileSync(`${__dirname}/widgets/vis-2-widgets-sweethome3d/navigationPanel.png`, fs.readFileSync(`${__dirname}/src-widgets/src/lib/navigationPanel.png`));
+   fs.writeFileSync(`${__dirname}/widgets/vis-2-widgets-sweethome3d/close.png`, fs.readFileSync(`${__dirname}/src-widgets/src/lib/close.png`));
+   done();
+});
+
+gulp.task('default', gulp.series('widget-build', 'copyPng'));

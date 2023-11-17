@@ -27,5 +27,15 @@
     "Only one widget per view is supported": "Only one widget per view is supported",
     "Level": "Level",
     "Camera": "Camera",
-    "Go to camera": "Go to camera"
+    "Reset camera view": "Reset camera view",
+    "show_virtual_aerial_switch": "Virtual aerial switch",
+    "show_level_selector": "Level selector",
+    "show_camera_selector": "Camera selector",
+    "show_reset_camera_button": "Reset view button",
+    "3D Objects": "3D Objects",
+    "type_color": "Change color",
+    "type_show": "Hide/show",
+    "type_open": "Open/Close",
+    "type_state": "Toggle state",
+    "type_widget": "Show widget dialog"
 }

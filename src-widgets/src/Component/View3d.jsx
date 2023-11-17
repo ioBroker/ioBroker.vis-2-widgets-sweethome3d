@@ -1,51 +1,68 @@
-import { v4 as uuidv4 } from 'uuid';
-import { useEffect, useRef, useState } from 'react';
 import {
-    Button,
-    MenuItem, TextField, ToggleButton, ToggleButtonGroup,
+    useCallback, useEffect,
+    useRef, useState,
+} from 'react';
+import { v4 as uuidv4 } from 'uuid';
+import PropTypes from 'prop-types';
+import { withStyles } from '@mui/styles';
+
+import {
+    Button, FormControl, InputLabel, LinearProgress,
+    MenuItem, Select, TextField, ToggleButton, ToggleButtonGroup, Typography,
 } from '@mui/material';
 
-import { withStyles } from '@mui/styles';
 import Generic from '../Generic';
 // import homeUrl from '../lib/default.sh3d';
 // const homeUrl = 'http://localhost:8082/vis-2.0/main/default.sh3d';
 
 export function rgb2color(r, g, b) {
     // eslint-disable-next-line
-    return -1 * ((0xFF - r) << 16 | (0xFF - g) << 8 | (0xFF - b) & 0xFF);
+    return -1 * (((0xFF - r) << 16) | ((0xFF - g) << 8) | ((0xFF - b) & 0xFF));
 }
 
 const styles = {
     canvas: { width: '100%', height:'100%' },
-    canvasContainer: { flex:1, minHeight: 0 },
+    canvasContainer: {
+        width: '100%',
+        height: '100%',
+        position: 'relative',
+    },
+    canvasContainerWithToolbar: {
+        height: 'calc(100% - 57px)',
+    },
     toolbar: {
         display: 'flex',
         gap: 8,
         alignItems: 'center',
     },
     container: {
-        display: 'grid', gridTemplateRows: 'auto min-content', overflow: 'auto',
+        width: '100%',
+        height: '100%',
+        overflow: 'hidden',
     },
-    toolbarContainer: { width: '100%' },
+    toolbarContainer: {
+        width: '100%',
+        marginTop: 8,
+    },
 };
 
 const View3d = props => {
     const [hpc, setHpc] = useState(null);
     const canvasRef = useRef(null);
     const [progress, setProgress] = useState(0);
-    const [progressVisible, setProgressVisible] = useState(true);
+    const [progressVisible, setProgressVisible] = useState(!!props.settings.file);
     const [progressLabel, setProgressLabel] = useState('');
-    const [view, setView] = useState('virtualVisit');
+    const [view, setView] = useState(props.settings.view || 'virtualVisit');
     const [levels, setLevels] = useState([]);
-    const [selectedLevel, setSelectedLevel] = useState(0);
+    const [selectedLevel, setSelectedLevel] = useState(props.settings.level || 0);
     const [cameras, setCameras] = useState([]);
-    const [selectedCamera, setSelectedCamera] = useState(0);
+    const [selectedCamera, setSelectedCamera] = useState(props.settings.camera || 0);
 
     useEffect(() => {
         let HPC;
         const onerror = err => {
             if (err === 'No WebGL') {
-                alert("Sorry, your browser doesn't support WebGL.");
+                alert('Sorry, your browser doesn\'t support WebGL.');
             } else {
                 // console.log(err.stack);
                 alert(`Error: ${err.message  ? `${err.constructor.name} ${err.message}`  : err
@@ -54,11 +71,11 @@ const View3d = props => {
         };
         const onprogression = (part, info, percentage) => {
             if (part === window.HomeRecorder.READING_HOME) {
-            // Home loading is finished
+                // Home loading is finished
                 setProgress(percentage * 100);
                 info = info.substring(info.lastIndexOf('/') + 1);
             } else if (part === window.Node3D.READING_MODEL) {
-            // Models loading is finished
+                // Model loading is finished
                 setProgress(100 + percentage * 100);
                 if (percentage === 1) {
                     const _levels = [];
@@ -73,9 +90,8 @@ const View3d = props => {
                     setLevels(_levels.reverse());
 
                     const _cameras = [];
-                    HPC.getHome().getStoredCameras().forEach((camera, index) => {
-                        _cameras.push({ name: camera.getName(), id: index, camera });
-                    });
+                    HPC.getHome().getStoredCameras().forEach((camera, index) =>
+                        _cameras.push({ name: camera.getName(), id: index, camera }));
                     setCameras(_cameras);
 
                     setProgressVisible(false);
@@ -109,7 +125,7 @@ const View3d = props => {
                         }
                     });
                     props.onLoad && props.onLoad();
-                    console.log(items);
+                    // console.log(items);
                 }
             }
 
@@ -125,7 +141,7 @@ const View3d = props => {
         canvasRef.current.id = uuidv4();
         HPC = window.viewHome(
             canvasRef.current.id,    // Id of the canvas
-            `http://localhost:8082/${props.homeUrl}`,           // URL or relative URL of the home to display
+            `../${props.settings.file}`,   // URL or relative URL of the home to display
             onerror,           // Callback called in case of error
             onprogression,     // Callback called while loading
             {
@@ -149,29 +165,66 @@ const View3d = props => {
             HPC && HPC.dispose();
         };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [props.homeUrl]);
+    }, [props.settings.file]);
+
+    const goToCamera = useCallback(cameraName => {
+        cameraName = cameraName || selectedCamera;
+        hpc.startRotationAnimationAfterLoading = false;
+        const camera = cameras[cameraName];
+        hpc.getController().goToCamera(camera.camera);
+        const _levels = [...levels].reverse();
+        for (const i in _levels) {
+            if (_levels[i].level.getElevation() < camera.camera.getZ() &&
+                (_levels[parseInt(i) + 1] ? _levels[parseInt(i) + 1].level.getElevation() > camera.camera.getZ() : true)
+            ) {
+                setSelectedLevel(_levels[i].level.id);
+                break;
+            }
+        }
+    }, [cameras, hpc, levels, selectedCamera]);
+
+    const toolbarVisible = props.showVirtualAerialSwitch || props.showLevelSelector || props.showCameraSelector || props.showResetCameraButton;
 
     return <div className={props.classes.container}>
-        <div className={props.classes.canvasContainer}>
+        <div className={`${props.classes.canvasContainer}${toolbarVisible ? ` ${props.classes.canvasContainerWithToolbar}` : ''}`}>
             <canvas
+                style={{ opacity: progressVisible ? 0.5 : 1 }}
                 className={`viewerComponent ${props.classes.canvas}`}
                 ref={canvasRef}
                 // eslint-disable-next-line jsx-a11y/tabindex-no-positive
                 tabIndex="1"
             ></canvas>
+            {progressVisible ? <div
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    height: 20,
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    zIndex: 1,
+                    width: '100%',
+                }}
+            >
+                <div style={{ width: '100%', mr: 1 }}>
+                    <LinearProgress variant="determinate" value={progress / 2} />
+                </div>
+                <div
+                    style={{
+                        minWidth: 300,
+                        whiteSpace: 'nowrap',
+                        marginLeft: 10,
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                    }}
+                >
+                    <Typography variant="body2" color="text.secondary">{progressLabel}</Typography>
+                </div>
+            </div> : <div style={{ height: 20 }} />}
         </div>
-        <div className={props.classes.toolbarContainer}>
-            {progressVisible ? <div>
-                <progress
-                    value={progress}
-                    max="200"
-                ></progress>
-                <span>
-                    {progressLabel}
-                </span>
-            </div> : null}
+        {!progressVisible && toolbarVisible ? <div className={props.classes.toolbarContainer}>
             <div className={props.classes.toolbar}>
-                <ToggleButtonGroup
+                {props.showVirtualAerialSwitch ? <ToggleButtonGroup
                     value={view}
                     exclusive
                     onChange={(e, value) => {
@@ -180,6 +233,7 @@ const View3d = props => {
                         home.setCamera(value === 'aerial'
                             ? home.getTopCamera()
                             : home.getObserverCamera());
+                        props.onSettingsChange && props.onSettingsChange({ view: value });
                         setView(value);
                     }}
                 >
@@ -189,8 +243,8 @@ const View3d = props => {
                     <ToggleButton value="aerial">
                         {Generic.t('Aerial view')}
                     </ToggleButton>
-                </ToggleButtonGroup>
-                <TextField
+                </ToggleButtonGroup> : null}
+                {props.showLevelSelector && levels?.length ? <TextField
                     select
                     variant="standard"
                     label={Generic.t('Level')}
@@ -199,42 +253,47 @@ const View3d = props => {
                         hpc.startRotationAnimationAfterLoading = false;
                         hpc.getHome().setSelectedLevel(levels.find(level => level.id === e.target.value).level);
                         setSelectedLevel(e.target.value);
+                        props.onSettingsChange && props.onSettingsChange({ level: e.target.value });
                     }}
                 >
                     {levels.map(level => <MenuItem key={level.id} value={level.id}>{level.name}</MenuItem>)}
-                </TextField>
-                <TextField
-                    select
-                    label={Generic.t('Camera')}
-                    variant="standard"
-                    value={selectedCamera}
-                    onChange={e => {
-                        setSelectedCamera(e.target.value);
-                    }}
-                >
-                    {cameras.map((camera, index) => <MenuItem key={index} value={camera.id}>{camera.name}</MenuItem>)}
-                </TextField>
-                <Button
+                </TextField> : null}
+                {props.showCameraSelector && cameras?.length ? <FormControl variant="standard">
+                    <InputLabel>{Generic.t('Camera')}</InputLabel>
+                    <Select
+                        value={selectedCamera}
+                        onChange={e => {
+                            setSelectedCamera(e.target.value);
+                            props.onSettingsChange && props.onSettingsChange({ camera: e.target.value });
+                            goToCamera(e.target.value);
+                        }}
+                    >
+                        {cameras.map((camera, index) =>
+                            <MenuItem key={index} value={camera.id}>{camera.name}</MenuItem>)}
+                    </Select>
+                </FormControl> : null}
+                {props.showCameraSelector || props.showResetCameraButton ? <Button
+                    variant="outlined"
                     color="grey"
-                    onClick={() => {
-                        hpc.startRotationAnimationAfterLoading = false;
-                        const camera = cameras[selectedCamera];
-                        hpc.getController().goToCamera(camera.camera);
-                        const _levels = [...levels].reverse();
-                        for (const i in _levels) {
-                            if (_levels[i].level.getElevation() < camera.camera.getZ()
-                        && (_levels[parseInt(i) + 1] ? _levels[parseInt(i) + 1].level.getElevation() > camera.camera.getZ() : true)) {
-                                setSelectedLevel(_levels[i].level.id);
-                                break;
-                            }
-                        }
-                    }}
+                    onClick={() => goToCamera()}
                 >
-                    {Generic.t('Go to camera')}
-                </Button>
+                    {Generic.t('Reset camera view')}
+                </Button> : null}
             </div>
-        </div>
+        </div> : null}
     </div>;
+};
+
+View3d.propTypes = {
+    settings: PropTypes.object,
+    onSettingsChange: PropTypes.func,
+    onClick: PropTypes.func,
+    HpcCallback: PropTypes.func,
+    onLoad: PropTypes.func,
+    showVirtualAerialSwitch: PropTypes.bool,
+    showLevelSelector: PropTypes.bool,
+    showCameraSelector: PropTypes.bool,
+    showResetCameraButton: PropTypes.bool,
 };
 
 export default withStyles(styles)(View3d);
