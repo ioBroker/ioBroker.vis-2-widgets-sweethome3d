@@ -37,7 +37,8 @@
     "img/",
     "io-package.json",
     "LICENSE",
-    "widgets/"
+    "widgets/",
+    "licenses/"
   ],
   "scripts": {
     "prepublishOnly": "gulp",

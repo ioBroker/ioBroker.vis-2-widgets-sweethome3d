@@ -107,6 +107,9 @@ const styles = theme => ({
         fontSize: '80%',
         fontStyle: 'italic',
     },
+    tooltip: {
+        pointerEvents: 'none',
+    },
 });
 
 function highLightObject(hpc, item) {
@@ -168,28 +171,36 @@ const SweetHome3dDialogItem = props => {
                     }}
                     disabled={select && selectItem !== i}
                 />
-                <IconButton
-                    variant="contained"
-                    onClick={() => {
-                        if (selectItem === i) {
-                            setSelectItem(null);
-                        } else {
-                            setSelectItem(i);
-                        }
-                    }}
-                    color="grey"
-                    disabled={select && selectItem !== i}
-                >
-                    <Colorize />
-                </IconButton>
-                <IconButton
-                    variant="contained"
-                    onClick={() => highLightObject(hpc, item)}
-                    color="grey"
-                    disabled={select || !item.id}
-                >
-                    <Visibility />
-                </IconButton>
+                <Tooltip title={Generic.t('Select object in 3D view')} classes={{ popper: props.classes.tooltip }}>
+                    <span>
+                        <IconButton
+                            variant="contained"
+                            onClick={() => {
+                                if (selectItem === i) {
+                                    setSelectItem(null);
+                                } else {
+                                    setSelectItem(i);
+                                }
+                            }}
+                            color="grey"
+                            disabled={select && selectItem !== i}
+                        >
+                            <Colorize />
+                        </IconButton>
+                    </span>
+                </Tooltip>
+                <Tooltip title={Generic.t('Highlight object in 3D view')} classes={{ popper: props.classes.tooltip }}>
+                    <span>
+                        <IconButton
+                            variant="contained"
+                            onClick={() => highLightObject(hpc, item)}
+                            color="grey"
+                            disabled={select || !item.id}
+                        >
+                            <Visibility />
+                        </IconButton>
+                    </span>
+                </Tooltip>
             </div>
             <div className={props.classes.header}>{Generic.t('On change')}</div>
             <div style={{ width: '100%' }}>
