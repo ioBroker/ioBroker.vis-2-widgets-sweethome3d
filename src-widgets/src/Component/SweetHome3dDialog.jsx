@@ -327,7 +327,7 @@ const SweetHome3dDialogItem = props => {
                 >
                     {Object.keys(widgets).map(id => {
                         const widget = widgets[id];
-                        if (!widget.data.useAsDialog) {
+                        if (!widget.data.externalDialog) {
                             return null;
                         }
                         return <MenuItem key={id} value={id} className={props.classes.widget}>

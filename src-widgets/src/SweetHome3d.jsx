@@ -180,7 +180,7 @@ class SweetHome3d extends Generic {
                 top: 0,
                 left: 0,
             },
-            visPrev: 'widgets/vis-2-widgets-material/img/prev_actual.png',
+            visPrev: 'widgets/vis-2-widgets-sweethome3d/img/prev_3dview.png',
         };
     }
 
