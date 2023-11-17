@@ -16,7 +16,7 @@
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 0.1.1 (2023-11-17)
 * (bluefox) initial commit
 
 ## License
