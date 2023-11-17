@@ -33,5 +33,6 @@
   "type_state": "Basculer l'état",
   "type_widget": "Afficher la boîte de dialogue du widget",
   "without_card": "Sans carte",
-  "Highlight object in 3D view": "Mettre en surbrillance un objet dans une vue 3D"
+  "Highlight object in 3D view": "Mettre en surbrillance un objet dans une vue 3D",
+  "Select object in 3D view": "Sélectionner un objet dans la vue 3D"
 }

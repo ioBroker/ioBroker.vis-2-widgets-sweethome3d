@@ -16,7 +16,7 @@
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 0.1.3 (2023-11-17)
 * (bluefox) Added translations
 
 ### 0.1.2 (2023-11-17)
@@ -58,4 +58,3 @@ in the file named COPYING.TXT; if not, see <http://www.gnu.org/licenses>.
 Sweet Home 3D includes also materials developed by third parties, or developed by Emmanuel PUYBARET / eTeks
 under other licenses.
 Please, read the files named [THIRDPARTY-LICENSE](licenses/licenses.md) for more details about other materials licenses.
-

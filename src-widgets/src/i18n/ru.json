@@ -33,5 +33,6 @@
   "type_state": "Переключить состояние",
   "type_widget": "Показать диалог виджета",
   "without_card": "Без карты",
-  "Highlight object in 3D view": "Выделить объект в 3D-виде"
+  "Highlight object in 3D view": "Выделить объект в 3D-виде",
+  "Select object in 3D view": "Выберите объект в 3D-виде"
 }
