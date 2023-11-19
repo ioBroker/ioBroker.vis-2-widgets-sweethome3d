@@ -202,18 +202,22 @@ class SweetHome3d extends Generic {
                 if (item.oid1 === id) {
                     const homeItems = this.state.hpc.getHome().getHomeObjects();
                     const homeItem = homeItems.find(_item => _item.name === item.id);
+                    let value = !!state.val;
+                    if (item.invert1) {
+                        value = !value;
+                    }
                     if (homeItem) {
                         if (item.oid1type === 'show') {
-                            homeItem.visible = !!state.val;
+                            homeItem.visible = value;
                             const component3D = this.state.hpc.getComponent3D();
                             component3D.updateObjects([homeItem]);
                         } else if (item.oid1type === 'color') {
                             const color = Color(item.color);
-                            homeItem.object3D.userData.color = state.val ? rgb2color(color.red(), color.green(), color.blue()) : homeItem.originalColor;
+                            homeItem.object3D.userData.color = value ? rgb2color(color.red(), color.green(), color.blue()) : homeItem.originalColor;
                             const component3D = this.state.hpc.getComponent3D();
                             component3D.updateObjects([homeItem]);
                         } else if (item.oid1type === 'open') {
-                            if (state.val) {
+                            if (value) {
                                 // const transformation = transformations.find(_transformation => _transformation.catalogId === homeItem.catalogId);
                                 // if (transformation) {
                                 //     homeItem.modelTransformations = {

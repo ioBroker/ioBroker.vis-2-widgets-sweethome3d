@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { withStyles } from '@mui/styles';
 
 import {
-    Button, Dialog, DialogActions,
-    DialogContent, IconButton, MenuItem,
+    Button, Checkbox, Dialog, DialogActions,
+    DialogContent, FormControlLabel, IconButton, MenuItem,
     Select, TextField, Tooltip,
 } from '@mui/material';
 
@@ -281,6 +281,20 @@ const SweetHome3dDialogItem = props => {
                     }}
                     socket={props.socket}
                 />}
+            </div>
+            <div className={props.classes.field}>
+                <FormControlLabel
+                    control={<Checkbox
+                        checked={!!item.invert1}
+                        onChange={e => {
+                            const items = JSON.parse(JSON.stringify(settings.items));
+                            items[i].invert1 = e.target.checked;
+                            setSettings({ ...settings, items });
+                        }}
+                        disabled={select}
+                    />}
+                    label={Generic.t('Invert value')}
+                />
             </div>
             <div className={props.classes.header}>{Generic.t('Action')}</div>
             <div className={props.classes.field}>

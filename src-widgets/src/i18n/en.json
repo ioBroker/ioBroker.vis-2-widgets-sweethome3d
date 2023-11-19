@@ -34,5 +34,6 @@
   "type_widget": "Show widget dialog",
   "Item": "Object",
   "Highlight object in 3D view": "Highlight object in 3D view",
-  "Select object in 3D view": "Select object in 3D view"
+  "Select object in 3D view": "Select object in 3D view",
+  "Invert value": "Invert value"
 }
