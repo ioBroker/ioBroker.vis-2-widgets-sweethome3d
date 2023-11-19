@@ -16,7 +16,7 @@
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 0.1.4 (2023-11-19)
 * (bluefox) Added state inversion
 
 ### 0.1.3 (2023-11-17)

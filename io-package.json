@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "vis-2-widgets-sweethome3d",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "news": {
+      "0.1.4": {
+        "en": "Added state inversion",
+        "de": "Zustandsinversion",
+        "ru": "Добавлена государственная инверсия",
+        "pt": "Adicionado inversão de estado",
+        "nl": "Gevoegd staatsinversie",
+        "fr": "Inversion d ' État",
+        "it": "Inversione di stato aggiunto",
+        "es": "Inversión del estado",
+        "pl": "Inwersja państwowa",
+        "uk": "Додано інверсію стану",
+        "zh-cn": "加入国"
+      },
       "0.1.3": {
         "en": "Added translations",
         "de": "Übersetzungen hinzugefügt",
