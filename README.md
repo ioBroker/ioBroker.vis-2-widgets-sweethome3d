@@ -16,6 +16,9 @@
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Changed the translation
+
 ### 0.1.4 (2023-11-19)
 * (bluefox) Added state inversion
 

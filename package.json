@@ -23,10 +23,10 @@
     "@alcalzone/release-script-plugin-license": "^3.5.9",
     "@iobroker/vis-2-widgets-react-dev": "^1.0.1",
     "@types/gulp": "^4.0.17",
-    "@types/mocha": "^10.0.4",
-    "@types/node": "^20.9.1",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "^20.9.4",
     "decompress": "^4.2.1",
-    "eslint": "^8.53.0",
+    "eslint": "^8.54.0",
     "gulp": "^4.0.2",
     "mocha": "^10.2.0",
     "@iobroker/vis-2-widgets-testing": "^0.3.0"
