@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "vis-2-widgets-sweethome3d",
-    "version": "0.1.4",
+    "version": "0.1.5",
     "news": {
+      "0.1.5": {
+        "en": "Changed the translation",
+        "de": "Änderung der Übersetzung",
+        "ru": "Изменен перевод",
+        "pt": "Mudou a tradução",
+        "nl": "Verander de vertaling",
+        "fr": "Changement de traduction",
+        "it": "Modificata la traduzione",
+        "es": "Cambio de la traducción",
+        "pl": "Zmienił tłumaczenie",
+        "uk": "Змінено переклад",
+        "zh-cn": "修改翻译"
+      },
       "0.1.4": {
         "en": "Added state inversion",
         "de": "Zustandsinversion",
