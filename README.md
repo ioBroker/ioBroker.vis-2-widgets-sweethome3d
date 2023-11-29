@@ -16,6 +16,9 @@
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Corrected the object selection dialog
+
 ### 0.1.5 (2023-11-22)
 * (bluefox) Changed the translation
 

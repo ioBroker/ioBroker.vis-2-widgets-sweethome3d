@@ -268,6 +268,7 @@ const SweetHome3dDialogItem = props => {
                     ...
                 </Button>
                 {dialogs[`${i}-1`] && <SelectID
+                    imagePrefix="../.."
                     selected={item.oid1}
                     onOk={selected => {
                         const items = JSON.parse(JSON.stringify(settings.items));
@@ -362,6 +363,7 @@ const SweetHome3dDialogItem = props => {
                     })}
                 </Select>}
                 {dialogs[`${i}-2`] && <SelectID
+                    imagePrefix="../.."
                     selected={item.oid2}
                     onOk={selected => {
                         const items = JSON.parse(JSON.stringify(settings.items));
