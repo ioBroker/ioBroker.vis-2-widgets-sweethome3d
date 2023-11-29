@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "vis-2-widgets-sweethome3d",
-    "version": "0.1.5",
+    "version": "0.1.6",
     "news": {
+      "0.1.6": {
+        "en": "Corrected the object selection dialog",
+        "de": "Korrektur des Objektauswahldialogs",
+        "ru": "Исправлен диалог выбора объекта",
+        "pt": "Corrigido a caixa de diálogo seleção de objetos",
+        "nl": "Vertaling:",
+        "fr": "Correction du dialogue de sélection de l'objet",
+        "it": "Corretto il dialogo selezione oggetto",
+        "es": "Corregido el diálogo de selección de objetos",
+        "pl": "Wykwalifikowane dialogi do wyboru obiektu",
+        "uk": "Виправлено діалогове вікно вибору об'єкта",
+        "zh-cn": "修改目标选择提示"
+      },
       "0.1.5": {
         "en": "Changed the translation",
         "de": "Änderung der Übersetzung",

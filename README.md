@@ -16,7 +16,7 @@
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 0.1.6 (2023-11-29)
 * (bluefox) Corrected the object selection dialog
 
 ### 0.1.5 (2023-11-22)
