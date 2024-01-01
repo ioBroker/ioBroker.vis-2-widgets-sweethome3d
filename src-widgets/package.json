@@ -11,7 +11,7 @@
         "@iobroker/vis-2-widgets-react-dev": "^1.0.1",
         "@mui/icons-material": "^5.14.19",
         "@mui/material": "5.14.14",
-        "@mui/styles": "5.14.19",
+        "@mui/styles": "5.15.2",
         "@mui/system": "^5.14.19",
         "color": "^4.2.3",
         "craco-esbuild": "^0.5.2",
