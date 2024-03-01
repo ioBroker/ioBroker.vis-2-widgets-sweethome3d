@@ -28,7 +28,7 @@
     "decompress": "^4.2.1",
     "eslint": "^8.54.0",
     "gulp": "^4.0.2",
-    "mocha": "^10.2.0",
+    "mocha": "^10.3.0",
     "@iobroker/vis-2-widgets-testing": "^0.3.0"
   },
   "main": "main.js",
