@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
 import Color from 'color';
 
 import { Button } from '@mui/material';
@@ -50,14 +49,14 @@ const CustomSettings = props => {
     </>;
 };
 
-const styles = () => ({
+const styles = {
     content: {
         width: '100%',
         display: 'grid',
         gridTemplateRows: 'auto min-content min-content',
         height: '100%',
     },
-});
+};
 
 class SweetHome3d extends Generic {
     divRef = React.createRef();
@@ -368,7 +367,7 @@ class SweetHome3d extends Generic {
 
         const content = <div
             ref={this.divRef}
-            className={this.props.classes.content}
+            style={styles.content}
         >
             {this.state.showDialog || this.state.hideViewer || tree3widgets[0] !== this.props.id ? null : <View3d
                 settings={this.state.rxData.settings}
@@ -415,4 +414,4 @@ SweetHome3d.propTypes = {
     data: PropTypes.object,
 };
 
-export default withStyles(styles)(SweetHome3d);
+export default SweetHome3d;

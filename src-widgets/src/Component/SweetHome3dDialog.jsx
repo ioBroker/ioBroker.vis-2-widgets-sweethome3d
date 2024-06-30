@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import { withStyles } from '@mui/styles';
 
 import {
     Button, Checkbox, Dialog, DialogActions,
@@ -26,20 +25,20 @@ const useStateRef = initialValue => {
     return [value, setValue, () => ref.current];
 };
 
-const styles = theme => ({
+const styles = {
     field: {
         display: 'flex',
         gap: 8,
         alignItems: 'end',
         width: '100%',
     },
-    header: {
-        marginTop: 10,
-        padding: 5,
+    header: theme => ({
+        mt: '10px',
+        p: '5px',
         fontWeight: 'bold',
         backgroundColor: theme.palette.primary.main,
         color: theme.palette.primary.contrastText,
-    },
+    }),
     fields: {
         display: 'flex',
         flexDirection: 'column',
@@ -60,16 +59,16 @@ const styles = theme => ({
     projectInput: {
         minWidth: 500,
     },
-    columnsContainer: {
+    columnsContainer: theme => ({
         verticalAlign: 'top',
         display: 'inline-block',
         width: 470,
         height: 'calc(100% - 10px)',
         overflow: 'hidden',
         backgroundColor: theme.palette.mode === 'dark' ? '#333' : '#ccc',
-        borderRadius: 5,
-        padding: 5,
-    },
+        borderRadius: '5px',
+        p: '5px',
+    }),
     columnsList: {
         width: 150,
         overflow: 'auto',
@@ -110,7 +109,7 @@ const styles = theme => ({
     tooltip: {
         pointerEvents: 'none',
     },
-});
+};
 
 function highLightObject(hpc, item) {
     const homeItems = hpc.getHome().getHomeObjects();
@@ -135,8 +134,8 @@ const SweetHome3dDialogItem = props => {
     const widgets = props.moreProps.context.views[props.moreProps.selectedView].widgets;
 
     return <div key={item.id}>
-        <div className={props.classes.fields}>
-            <div className={props.classes.field}>
+        <div style={styles.fields}>
+            <div style={styles.field}>
                 <TextField
                     variant="standard"
                     label={Generic.t('Name')}
@@ -159,7 +158,7 @@ const SweetHome3dDialogItem = props => {
                     </IconButton>
                 </Tooltip>
             </div>
-            <div className={props.classes.field}>
+            <div style={styles.field}>
                 <TextField
                     variant="standard"
                     label={Generic.t('Id')}
@@ -171,7 +170,7 @@ const SweetHome3dDialogItem = props => {
                     }}
                     disabled={select && selectItem !== i}
                 />
-                <Tooltip title={Generic.t('Select object in 3D view')} classes={{ popper: props.classes.tooltip }}>
+                <Tooltip title={Generic.t('Select object in 3D view')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                     <span>
                         <IconButton
                             variant="contained"
@@ -189,7 +188,7 @@ const SweetHome3dDialogItem = props => {
                         </IconButton>
                     </span>
                 </Tooltip>
-                <Tooltip title={Generic.t('Highlight object in 3D view')} classes={{ popper: props.classes.tooltip }}>
+                <Tooltip title={Generic.t('Highlight object in 3D view')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                     <span>
                         <IconButton
                             variant="contained"
@@ -202,7 +201,7 @@ const SweetHome3dDialogItem = props => {
                     </span>
                 </Tooltip>
             </div>
-            <div className={props.classes.header}>{Generic.t('On change')}</div>
+            <Box component="div" sx={styles.header}>{Generic.t('On change')}</Box>
             <div style={{ width: '100%' }}>
                 <Select
                     variant="standard"
@@ -220,7 +219,7 @@ const SweetHome3dDialogItem = props => {
                     </MenuItem>)}
                 </Select>
             </div>
-            <div className={props.classes.field}>
+            <div style={styles.field}>
                 {item.oid1type === 'color' && <ColorPicker
                     style={{ width: '100%' }}
                     value={item.color || ''}
@@ -242,7 +241,7 @@ const SweetHome3dDialogItem = props => {
                     disabled={select}
                 />}
             </div>
-            <div className={props.classes.field}>
+            <div style={styles.field}>
                 <TextField
                     variant="standard"
                     style={{ width: 'calc(100% - 50px)' }}
@@ -256,7 +255,7 @@ const SweetHome3dDialogItem = props => {
                     disabled={select}
                 />
                 <Button
-                    className={props.classes.idButton}
+                    style={styles.idButton}
                     onClick={() => {
                         const _dialogs = JSON.parse(JSON.stringify(dialogs));
                         _dialogs[`${i}-1`] = true;
@@ -283,7 +282,7 @@ const SweetHome3dDialogItem = props => {
                     socket={props.socket}
                 />}
             </div>
-            <div className={props.classes.field}>
+            <div style={styles.field}>
                 <FormControlLabel
                     control={<Checkbox
                         checked={!!item.invert1}
@@ -297,8 +296,8 @@ const SweetHome3dDialogItem = props => {
                     label={Generic.t('Invert value')}
                 />
             </div>
-            <div className={props.classes.header}>{Generic.t('Action')}</div>
-            <div className={props.classes.field}>
+            <Box component="div" sx={styles.header}>{Generic.t('Action')}</Box>
+            <div style={styles.field}>
                 <Select
                     variant="standard"
                     style={{ width: '100%' }}
@@ -315,7 +314,7 @@ const SweetHome3dDialogItem = props => {
                     </MenuItem>)}
                 </Select>
             </div>
-            <div className={props.classes.field}>
+            <div style={styles.field}>
                 {item.oid2type === 'state' && <TextField
                     variant="standard"
                     label={Generic.t('Object id')}
@@ -329,7 +328,7 @@ const SweetHome3dDialogItem = props => {
                     disabled={select}
                 />}
                 {item.oid2type === 'state' && <Button
-                    className={props.classes.idButton}
+                    style={styles.idButton}
                     onClick={() => {
                         const _dialogs = JSON.parse(JSON.stringify(dialogs));
                         _dialogs[`${i}-2`] = true;
@@ -356,9 +355,9 @@ const SweetHome3dDialogItem = props => {
                         if (!widget.data.externalDialog) {
                             return null;
                         }
-                        return <MenuItem key={id} value={id} className={props.classes.widget}>
+                        return <MenuItem key={id} value={id} style={styles.widget}>
                             <div>{id}</div>
-                            <div className={props.classes.widgetSubname}>{widget.tpl}</div>
+                            <div style={styles.widgetSubname}>{widget.tpl}</div>
                         </MenuItem>;
                     })}
                 </Select>}
@@ -489,14 +488,14 @@ const SweetHome3dDialog = props => {
 
     return <Dialog
         open={!0}
-        classes={{ paper: props.classes.dialogPaper }}
+        sx={{ '& .MuiDialog-paper': styles.dialogPaper }}
         onClose={props.onClose}
         fullWidth
         maxWidth="xl"
     >
-        <DialogContent className={props.classes.dialogContent}>
-            <div className={props.classes.columnViewer}>
-                <div className={props.classes.field}>
+        <DialogContent style={styles.dialogContent}>
+            <div style={styles.columnViewer}>
+                <div style={styles.field}>
                     {fileDialog && <SelectFile
                         title={Generic.t('Select file')}
                         onClose={() => setFileDialog(false)}
@@ -515,7 +514,7 @@ const SweetHome3dDialog = props => {
                         socket={props.socket}
                     />}
                     <TextField
-                        className={props.classes.projectInput}
+                        style={styles.projectInput}
                         variant="standard"
                         value={settings.file || ''}
                         label={!settings.file ? Generic.t('Please upload or select SweetHome 3D Project') : Generic.t('SweetHome3D File')}
@@ -541,9 +540,9 @@ const SweetHome3dDialog = props => {
                     /> : null}
                 </div>
             </div>
-            <div className={props.classes.columnsContainer}>
+            <Box component="div" sx={styles.columnsContainer}>
                 <div style={{ width: '100%', fontWeight: 'bold', fontSize: 16 }}>{Generic.t('3D Objects')}</div>
-                <div className={props.classes.columnsList}>
+                <div style={styles.columnsList}>
                     {settings.file ? <Tooltip title={Generic.t('Add item')}>
                         <IconButton onClick={() => {
                             const items = JSON.parse(JSON.stringify(settings.items));
@@ -574,7 +573,7 @@ const SweetHome3dDialog = props => {
                         {item.name || item.id}
                     </MenuItem>)}
                 </div>
-                <div className={props.classes.columnRight}>
+                <div style={styles.columnRight}>
                     {settings.items[currentItem] && <SweetHome3dDialogItem
                         {...props}
                         i={currentItem}
@@ -589,7 +588,7 @@ const SweetHome3dDialog = props => {
                         hpc={hpc}
                     />}
                 </div>
-            </div>
+            </Box>
         </DialogContent>
         <DialogActions>
             <Button
@@ -615,4 +614,4 @@ const SweetHome3dDialog = props => {
     </Dialog>;
 };
 
-export default withStyles(styles)(SweetHome3dDialog);
+export default SweetHome3dDialog;

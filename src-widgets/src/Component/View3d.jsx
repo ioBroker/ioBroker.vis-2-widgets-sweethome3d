@@ -4,7 +4,6 @@ import {
 } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
 
 import {
     Button, FormControl, InputLabel, LinearProgress,
@@ -185,11 +184,16 @@ const View3d = props => {
 
     const toolbarVisible = props.showVirtualAerialSwitch || props.showLevelSelector || props.showCameraSelector || props.showResetCameraButton;
 
-    return <div className={props.classes.container}>
-        <div className={`${props.classes.canvasContainer}${toolbarVisible ? ` ${props.classes.canvasContainerWithToolbar}` : ''}`}>
+    return <div style={styles.container}>
+        <div
+            style={{
+                ...styles.canvasContainer,
+                ...(toolbarVisible ? styles.canvasContainerWithToolbar : undefined),
+            }}
+        >
             <canvas
-                style={{ opacity: progressVisible ? 0.5 : 1 }}
-                className={`viewerComponent ${props.classes.canvas}`}
+                style={{ ...styles.canvas, opacity: progressVisible ? 0.5 : 1 }}
+                className="viewerComponent"
                 ref={canvasRef}
                 // eslint-disable-next-line jsx-a11y/tabindex-no-positive
                 tabIndex="1"
@@ -222,8 +226,8 @@ const View3d = props => {
                 </div>
             </div> : <div style={{ height: 20 }} />}
         </div>
-        {!progressVisible && toolbarVisible ? <div className={props.classes.toolbarContainer}>
-            <div className={props.classes.toolbar}>
+        {!progressVisible && toolbarVisible ? <div style={styles.toolbarContainer}>
+            <div style={styles.toolbar}>
                 {props.showVirtualAerialSwitch ? <ToggleButtonGroup
                     value={view}
                     exclusive
@@ -296,4 +300,4 @@ View3d.propTypes = {
     showResetCameraButton: PropTypes.bool,
 };
 
-export default withStyles(styles)(View3d);
+export default View3d;
