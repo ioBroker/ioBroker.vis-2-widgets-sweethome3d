@@ -16,7 +16,7 @@
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 0.2.0 (2024-07-12)
 * (bluefox) Corrected translations
 
 ### 0.1.6 (2023-11-29)

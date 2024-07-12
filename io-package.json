@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "vis-2-widgets-sweethome3d",
-    "version": "0.1.6",
+    "version": "0.2.0",
     "news": {
+      "0.2.0": {
+        "en": "Corrected translations",
+        "de": "Korrigierte Übersetzungen",
+        "ru": "Исправленные переводы",
+        "pt": "Traduções corrigidas",
+        "nl": "Gecorrigeerde vertalingen",
+        "fr": "Traductions corrigées",
+        "it": "Traduzioni corrette",
+        "es": "Traducciones corregidas",
+        "pl": "Poprawione tłumaczenia",
+        "uk": "Виправлені переклади",
+        "zh-cn": "更正的翻译"
+      },
       "0.1.6": {
         "en": "Corrected the object selection dialog",
         "de": "Korrektur des Objektauswahldialogs",
