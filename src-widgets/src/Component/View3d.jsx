@@ -68,7 +68,7 @@ const View3d = props => {
                 }${window.location.href.indexOf('file://') === 0 ? '\nCheck your browser is allowed to access local files.' : ''}`);
             }
         };
-        const onprogression = (part, info, percentage) => {
+        const onProgression = (part, info, percentage) => {
             if (part === window.HomeRecorder.READING_HOME) {
                 // Home loading is finished
                 setProgress(percentage * 100);
@@ -142,7 +142,7 @@ const View3d = props => {
             canvasRef.current.id,    // Id of the canvas
             `../${props.settings.file}`,   // URL or relative URL of the home to display
             onerror,           // Callback called in case of error
-            onprogression,     // Callback called while loading
+            onProgression,     // Callback called while loading
             {
                 roundsPerMinute: 0,                    // Rotation speed of the animation launched once home is loaded in rounds per minute, no animation if missing or equal to 0
                 navigationPanel: 'none',               // Displayed navigation arrows, "none" or "default" for default one or an HTML string containing elements with data-simulated-key

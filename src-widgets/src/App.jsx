@@ -90,4 +90,4 @@ class App extends WidgetDemoApp {
     }
 }
 
-export default withStyles(styles)(App);
+export default App;

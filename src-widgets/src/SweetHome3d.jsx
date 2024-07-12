@@ -31,11 +31,10 @@ const CustomSettings = props => {
                 window.hpcShowViewer && window.hpcShowViewer();
             }}
             settings={props.data.settings}
-            onChange={data => {
-                props.setData({ ...props.data, settings: data });
-            }}
+            onChange={data => props.setData({ ...props.data, settings: data })}
             socket={props.context.socket}
             moreProps={props.props}
+            theme={props.context.theme}
         /> : null}
         <Button
             variant="contained"
@@ -326,15 +325,13 @@ class SweetHome3d extends Generic {
         // }
 
         this.state.rxData.settings.items.filter(_item => _item.id === item.name).forEach(_item => {
-            if (_item.oid2) {
-                if (_item.oid2type === 'state') {
-                    this.props.context.socket.getState(_item.oid2).then(state =>
-                        this.props.context.socket.setState(_item.oid2, !state.val));
-                } else if (_item.oid2type === 'widget') {
-                    // this.setState({ widgetDialog: _item.widget });
-                    const refWidget = this.props.askView && this.props.askView('getRef', { id: _item.widget });
-                    refWidget?.onCommand('openDialog');
-                }
+            if (_item.oid2type === 'state') {
+                _item.oid2 && this.props.context.socket.getState(_item.oid2).then(state =>
+                    this.props.context.socket.setState(_item.oid2, !state.val));
+            } else if (_item.oid2type === 'widget') {
+                // this.setState({ widgetDialog: _item.widget });
+                const refWidget = this.props.askView && this.props.askView('getRef', { id: _item.widget });
+                refWidget?.onCommand('openDialog');
             }
         });
 
@@ -369,7 +366,7 @@ class SweetHome3d extends Generic {
             ref={this.divRef}
             style={styles.content}
         >
-            {this.state.showDialog || this.state.hideViewer || tree3widgets[0] !== this.props.id ? null : <View3d
+            {this.state.showDialog || this.state.hideViewer || tree3widgets[0] !== this.props.id || !this.state.rxData.settings.file ? null : <View3d
                 settings={this.state.rxData.settings}
                 onClick={this.onItemClick}
                 HpcCallback={hpc => this.setState({ hpc })}

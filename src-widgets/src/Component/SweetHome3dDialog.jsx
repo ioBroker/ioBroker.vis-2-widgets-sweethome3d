@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 import {
+    Box,
     Button, Checkbox, Dialog, DialogActions,
     DialogContent, FormControlLabel, IconButton, MenuItem,
     Select, TextField, Tooltip,
@@ -267,6 +268,7 @@ const SweetHome3dDialogItem = props => {
                     ...
                 </Button>
                 {dialogs[`${i}-1`] && <SelectID
+                    theme={props.theme}
                     imagePrefix="../.."
                     selected={item.oid1}
                     onOk={selected => {
@@ -362,6 +364,7 @@ const SweetHome3dDialogItem = props => {
                     })}
                 </Select>}
                 {dialogs[`${i}-2`] && <SelectID
+                    theme={props.theme}
                     imagePrefix="../.."
                     selected={item.oid2}
                     onOk={selected => {
@@ -497,6 +500,7 @@ const SweetHome3dDialog = props => {
             <div style={styles.columnViewer}>
                 <div style={styles.field}>
                     {fileDialog && <SelectFile
+                        theme={props.theme}
                         title={Generic.t('Select file')}
                         onClose={() => setFileDialog(false)}
                         showToolbar
