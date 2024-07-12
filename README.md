@@ -35,7 +35,7 @@
 * (bluefox) initial commit
 
 ## License
-Copyright (c) 2023 Bluefox <dogafox@gmail.com>
+Copyright (c) 2023-2024 Bluefox <dogafox@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it under the
 terms of the GNU General Public License as published by the Free Software Foundation;
@@ -54,7 +54,7 @@ Please, read the files named THIRDPARTY-LICENSE for more details about other mat
 
 
 
-Sweet Home 3D JS, Copyright (c) 2016-2023 Emmanuel PUYBARET / eTeks <info@eteks.com>
+Sweet Home 3D JS, Copyright (c) 2016-2024 Emmanuel PUYBARET / eTeks <info@eteks.com>
 
 This program is free software; you can redistribute it and/or modify it under the
 terms of the GNU General Public License as published by the Free Software Foundation;
