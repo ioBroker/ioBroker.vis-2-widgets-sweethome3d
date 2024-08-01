@@ -6,7 +6,7 @@
         "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
         "@craco/craco": "^7.1.0",
         "@iobroker/adapter-react-v5": "^6.0.14",
-        "@iobroker/vis-2-widgets-react-dev": "^2.0.2",
+        "@iobroker/vis-2-widgets-react-dev": "^3.0.7",
         "@mui/icons-material": "^5.16.6",
         "@mui/material": "^5.16.6",
         "color": "^4.2.3",
