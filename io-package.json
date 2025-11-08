@@ -103,6 +103,7 @@
     "enabled": true,
     "readme": "https://github.com/ioBroker/ioBroker.vis-2-widgets-sweethome3d/blob/master/README.md",
     "loglevel": "info",
+    "tier": 3,
     "mode": "once",
     "singleton": true,
     "adminUI": {
