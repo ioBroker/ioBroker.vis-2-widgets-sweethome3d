@@ -35,7 +35,7 @@
 * (bluefox) initial commit
 
 ## License
-Copyright (c) 2023-2024 Bluefox <dogafox@gmail.com>
+Copyright (c) 2023-2025 Bluefox <dogafox@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it under the
 terms of the GNU General Public License as published by the Free Software Foundation;
