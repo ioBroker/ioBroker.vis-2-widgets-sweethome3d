@@ -34,6 +34,8 @@
 ### 0.1.2 (2023-11-17)
 * (bluefox) initial commit
 
+[Older changelogs can be found there](CHANGELOG_OLD.md)
+
 ## License
 Copyright (c) 2023-2026 Bluefox <dogafox@gmail.com>
 
