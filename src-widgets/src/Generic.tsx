@@ -1,37 +1,27 @@
-import PropTypes from 'prop-types';
+import type { VisRxWidgetState } from '@iobroker/types-vis-2';
+import type VisRxWidget from '@iobroker/types-vis-2/visRxWidget';
 
-import {
-    Card, CardContent,
-} from '@mui/material';
+export default class Generic<
+    RxData extends Record<string, any>,
+    State extends Partial<VisRxWidgetState> = VisRxWidgetState,
+> extends (window.visRxWidget as typeof VisRxWidget)<RxData, State> {
+    getPropertyValue = (stateName: string): any => this.state.values[`${(this.state.rxData as any)[stateName]}.val`];
 
-import { VisRxWidget } from '@iobroker/vis-2-widgets-react-dev';
-
-class Generic extends (window.visRxWidget || VisRxWidget) {
-    getPropertyValue = stateName => this.state.values[`${this.state.rxData[stateName]}.val`];
-
-    static getI18nPrefix() {
+    static getI18nPrefix(): string {
         return 'vis_2_widgets_sweethome3d_';
     }
 
-    // TODO: remove this method when vis-2-widgets-react-dev is updated
-    static getText(text) {
-        if (text && typeof text === 'object') {
-            return text[(window.visRxWidget || VisRxWidget).getLanguage()] || text.en;
-        }
-        return text || null;
-    }
-
-    async getParentObject(id) {
+    async getParentObject(id: string): Promise<ioBroker.Object | null> {
         const parts = id.split('.');
         parts.pop();
         const parentOID = parts.join('.');
-        return this.props.context.socket.getObject(parentOID);
+        return (await this.props.context.socket.getObject(parentOID)) ?? null;
     }
 
-    static getObjectIcon(obj, id, imagePrefix) {
-        imagePrefix = imagePrefix || '../..'; // http://localhost:8081';
+    static getObjectIcon(obj: ioBroker.Object, id: string, imagePrefix?: string): string | null {
+        imagePrefix ||= '../..'; // http://localhost:8081';
         let src = '';
-        const common = obj && obj.common;
+        const common = obj?.common;
 
         if (common) {
             const cIcon = common.icon;
@@ -40,7 +30,7 @@ class Generic extends (window.visRxWidget || VisRxWidget) {
                     if (cIcon.includes('.')) {
                         let instance;
                         if (obj.type === 'instance' || obj.type === 'adapter') {
-                            src = `${imagePrefix}/adapter/${common.name}/${cIcon}`;
+                            src = `${imagePrefix}/adapter/${common.name as string}/${cIcon}`;
                         } else if (id && id.startsWith('system.adapter.')) {
                             instance = id.split('.', 3);
                             if (cIcon[0] === '/') {
@@ -69,17 +59,4 @@ class Generic extends (window.visRxWidget || VisRxWidget) {
 
         return src || null;
     }
-
-    wrapContent(content, addToHeader, cardContentStyle, headerStyle, onCardClick) {
-        return super.wrapContent(content, addToHeader, cardContentStyle, headerStyle, onCardClick, { Card, CardContent });
-    }
 }
-
-Generic.propTypes = {
-    context: PropTypes.object,
-    themeType: PropTypes.string,
-    style: PropTypes.object,
-    data: PropTypes.object,
-};
-
-export default Generic;

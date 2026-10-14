@@ -18,6 +18,8 @@ updates:
       cronjob: '24 3 22 * *'
     open-pull-requests-limit: 15
     versioning-strategy: 'increase'
+    cooldown:
+      default-days: 7
     ignore:
       - dependency-name: '@types/node'
         update-types:
@@ -31,3 +33,10 @@ updates:
       cronjob: '24 3 22 * *'
     open-pull-requests-limit: 20
     versioning-strategy: 'increase'
+    cooldown:
+      default-days: 7
+    # the widgets are built with react-scripts and craco, which pin React 18 and MUI 5
+    ignore:
+      - dependency-name: '*'
+        update-types:
+          - 'version-update:semver-major'

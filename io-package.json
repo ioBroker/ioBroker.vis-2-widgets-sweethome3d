@@ -70,23 +70,43 @@
       },
       "0.1.2": {
         "en": "initial commit",
-        "de": "erster auftrag",
-        "ru": "первоначальный коммит",
+        "de": "Erste Version",
+        "ru": "Первая версия",
         "pt": "commit inicial",
-        "nl": ".",
-        "fr": "initial commit",
+        "nl": "Eerste versie",
+        "fr": "Première version",
         "it": "commit iniziale",
-        "es": "inicial",
-        "pl": "wstępny proces",
-        "uk": "початкова комісія",
-        "zh-cn": "初步承诺"
+        "es": "Versión inicial",
+        "pl": "Pierwsza wersja",
+        "uk": "Перша версія",
+        "zh-cn": "首次发布"
       }
     },
     "titleLang": {
-      "en": "Vis 2 Widgets SweetHome-3D"
+      "en": "Vis 2 Widgets SweetHome-3D",
+      "de": "Vis 2 Widgets SweetHome-3D",
+      "ru": "Vis 2 Widgets SweetHome-3D",
+      "pt": "Vis 2 Widgets SweetHome-3D",
+      "nl": "Vis 2 Widgets SweetHome-3D",
+      "fr": "Vis 2 Widgets SweetHome-3D",
+      "it": "Vis 2 Widgets SweetHome-3D",
+      "es": "Vis 2 Widgets SweetHome-3D",
+      "pl": "Vis 2 Widgets SweetHome-3D",
+      "uk": "Vis 2 Widgets SweetHome-3D",
+      "zh-cn": "Vis 2 Widgets SweetHome-3D"
     },
     "desc": {
-      "en": "Vis 2 Widgets SweetHome-3D"
+      "en": "Shows a 3D model of the home made with Sweet Home 3D in vis-2",
+      "de": "Zeigt in vis-2 ein mit Sweet Home 3D erstelltes 3D-Modell des Hauses",
+      "ru": "Показывает в vis-2 3D-модель дома, созданную в Sweet Home 3D",
+      "pt": "Mostra no vis-2 um modelo 3D da casa criado com o Sweet Home 3D",
+      "nl": "Toont in vis-2 een 3D-model van het huis, gemaakt met Sweet Home 3D",
+      "fr": "Affiche dans vis-2 un modèle 3D de la maison créé avec Sweet Home 3D",
+      "it": "Mostra in vis-2 un modello 3D della casa creato con Sweet Home 3D",
+      "es": "Muestra en vis-2 un modelo 3D de la casa creado con Sweet Home 3D",
+      "pl": "Pokazuje w vis-2 model 3D domu utworzony w Sweet Home 3D",
+      "uk": "Показує у vis-2 3D-модель будинку, створену в Sweet Home 3D",
+      "zh-cn": "在 vis-2 中显示用 Sweet Home 3D 制作的房屋 3D 模型"
     },
     "authors": [
       "bluefox <dogafox@gmail.com>"
@@ -106,7 +126,7 @@
     "readme": "https://github.com/ioBroker/ioBroker.vis-2-widgets-sweethome3d/blob/master/README.md",
     "loglevel": "info",
     "tier": 3,
-    "mode": "once",
+    "mode": "none",
     "singleton": true,
     "adminUI": {
       "config": "none"
@@ -121,6 +141,7 @@
         "i18n": "component",
         "name": "vis2SweetHome3dWidgets",
         "url": "vis-2-widgets-sweethome3d/customWidgets.js",
+        "bundlerType": "module",
         "components": [
           "SweetHome3d"
         ]

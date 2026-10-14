@@ -1,45 +1,40 @@
 {
     "name": "iobroker.vis-2-widgets-sweethome3d",
     "private": true,
-    "version": "2.0.2",
+    "version": "0.2.0",
+    "type": "module",
     "dependencies": {
-        "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-        "@craco/craco": "^7.1.0",
-        "@iobroker/adapter-react-v5": "^6.0.14",
-        "@iobroker/vis-2-widgets-react-dev": "^2.0.2",
-        "@mui/icons-material": "^5.16.6",
-        "@mui/material": "^5.16.6",
-        "color": "^4.2.3",
-        "craco-esbuild": "^0.6.1",
-        "craco-module-federation": "^1.1.0",
-        "eslint": "^8.57.0",
-        "eslint-config-airbnb": "^19.0.4",
-        "eslint-plugin-eqeqeq-fix": "^1.0.3",
-        "eslint-plugin-import": "^2.29.1",
-        "eslint-plugin-jsx-a11y": "^6.9.0",
-        "eslint-plugin-only-warn": "^1.1.0",
-        "eslint-plugin-react": "^7.34.3",
-        "eslint-plugin-react-hooks": "^4.6.2",
-        "node-sass": "^9.0.0",
-        "prop-types": "^15.8.1",
-        "react": "^18.3.1",
-        "react-dom": "^18.3.1",
-        "react-icons": "^5.2.1",
-        "react-scripts": "^5.0.1",
-        "sass": "^1.77.8",
-        "uuid": "^10.0.0"
+        "@iobroker/types-vis-2": "~2.20.1",
+        "@module-federation/vite": "^1.22.1",
+        "@vitejs/plugin-react": "^6.1.1",
+        "color": "^5.0.3"
+    },
+    "devDependencies": {
+        "@emotion/react": "^11.14.0",
+        "@emotion/styled": "^11.14.1",
+        "@iobroker/gui-components": "^10.3.5",
+        "@iobroker/types": "^7.2.5",
+        "@mui/icons-material": "^9.4.0",
+        "@mui/material": "^9.4.0",
+        "@mui/system": "^9.4.0",
+        "@types/node": "^26.6.2",
+        "@types/react": "^19.3.0",
+        "@types/react-dom": "^19.3.0",
+        "react": "^19.3.0",
+        "react-dom": "^19.3.0",
+        "rollup": "^4.63.5",
+        "typescript": "^6.0.3",
+        "vite": "^8.3.1",
+        "vite-plugin-top-level-await": "^1.6.0"
+    },
+    "overrides": {
+        "@swc/core": "~1.15.47",
+        "@swc/wasm": "~1.15.47"
     },
     "scripts": {
-        "start": "set PORT=4173 && craco start",
-        "old-start": "set PORT=4173 && react-scripts start",
-        "lint": "eslint --fix --ext .js,.jsx src",
-        "build": "craco build",
-        "test": "react-scripts test",
-        "eject": "react-scripts eject",
-        "i18n": "node node_modules/@iobroker/vis-2-widgets-react-dev/searchI18n vis_2_widgets_material"
-    },
-    "eslintConfig": {
-        "extends": "react-app"
+        "start": "vite --port 4173",
+        "build": "tsc && vite build",
+        "preview": "vite preview"
     },
     "homepage": ".",
     "browserslist": [

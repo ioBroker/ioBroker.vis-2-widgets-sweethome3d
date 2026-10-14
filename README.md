@@ -16,6 +16,11 @@
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (@GermanBluefox) Adapter requires node.js >= 22 now
+* (@GermanBluefox) Updated the release script, the CI runs the standard checks and publishes with trusted publishing
+* (@GermanBluefox) Migrated the widgets to TypeScript, Vite, React 19 and MUI 9. Build tasks are now in `tasks.ts` instead of gulp
+
 ### 0.2.0 (2024-07-12)
 * (bluefox) Corrected translations
 
