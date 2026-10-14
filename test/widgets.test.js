@@ -1,33 +1,36 @@
 const helper = require('@iobroker/vis-2-widgets-testing');
 const adapterName = require('../package.json').name.split('.').pop();
 
-describe('vis-2-widgets-sweethome3d', () => {
-    before(async function (){
-        this.timeout(180000);
-        // install js-controller, web and vis-2-beta
-        await helper.startIoBroker();
-        await helper.startBrowser(process.env.CI === 'true' ? 'new' : false);
-        await helper.createProject();
+let page;
+let browser;
+
+describe(adapterName, () => {
+    before(async function () {
+        this.timeout(180_000);
+        // install js-controller, web and vis-2
+        await helper.startIoBroker({ widgetsSetName: adapterName });
+        const result = await helper.startBrowser(process.env.CI === 'true');
+        browser = result.browser;
+        page = result.page;
+        await helper.createProject(page);
 
         // open widgets
-        await helper.palette.openWidgetSet(null, adapterName);
-        await helper.screenshot(null, '02_widgets_opened');
+        await helper.palette.openWidgetSet(page, adapterName);
+        await helper.screenshot(page, '02_widgets_opened');
     });
 
-    it('Check all widgets', async function (){
-        this.timeout(60000);
-        const widgets = await helper.palette.getListOfWidgets(null, adapterName);
-        for (let w = 0; w < widgets.length; w++) {
-            const wid = await helper.palette.addWidget(null, widgets[w], true);
-            await helper.screenshot(null, `10_${widgets[w]}`);
-            await helper.view.deleteWidget(null, wid);
+    it('Check all widgets', async function () {
+        this.timeout(60_000);
+        for (const widgetName of await helper.palette.getListOfWidgets(page, adapterName)) {
+            const wid = await helper.palette.addWidget(page, widgetName);
+            await helper.screenshot(page, `10_${widgetName}`);
+            await helper.view.deleteWidget(page, wid);
         }
-        return Promise.resolve();
     });
 
     after(async function () {
-        this.timeout(5000);
-        await helper.stopBrowser();
-        return helper.stopIoBroker();
+        this.timeout(10_000);
+        await helper.stopBrowser(browser);
+        await helper.stopIoBroker();
     });
 });
