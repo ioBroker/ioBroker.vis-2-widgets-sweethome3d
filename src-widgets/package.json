@@ -15,7 +15,7 @@
         "@iobroker/gui-components": "^10.3.11",
         "@iobroker/types": "^7.2.5",
         "@mui/icons-material": "^9.4.0",
-        "@mui/material": "^9.4.0",
+        "@mui/material": "^9.5.0",
         "@mui/system": "^9.4.0",
         "@types/node": "^26.6.2",
         "@types/react": "^19.3.0",
