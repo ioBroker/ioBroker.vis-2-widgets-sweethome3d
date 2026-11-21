@@ -6,6 +6,8 @@
 
 [![NPM](https://nodei.co/npm/iobroker.vis-2-widgets-material.png?downloads=true)](https://nodei.co/npm/iobroker.vis-2-widgets-material/)
 
+**This widget set is not maintained anymore and will be removed from the ioBroker repositories (latest and stable).**
+
 ## How to use
 
 ## Todo
@@ -19,6 +21,7 @@
 ### **WORK IN PROGRESS**
 * (@GermanBluefox) Adapter requires node.js >= 22 now
 * (@GermanBluefox) Updated the release script, the CI runs the standard checks and publishes with trusted publishing
+* (GermanBluefox) Marked the widget set as not maintained anymore, it will be removed from the ioBroker repositories (#150)
 * (@GermanBluefox) Migrated the widgets to TypeScript, Vite, React 19 and MUI 9. Build tasks are now in `tasks.ts` instead of gulp
 
 ### 0.2.0 (2024-07-12)
